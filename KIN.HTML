@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>מצפן הפסיכולוגיה - המכללה האקדמית כנרת</title>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            /* Kinneret Brand Colors */
+            --kinneret-blue: #0057C4;      
+            --kinneret-teal: #1C8F6A;      
+            --kinneret-orange: #FF8C29;    
+            --kinneret-red: #FC4539;       
+            --kinneret-yellow: #C9E300;    
+            --kinneret-black: #000000;
+            
+            /* UI Variables */
+            --primary: var(--kinneret-blue);
+            --secondary: #F0F8FF;
+            --bg-body: #ffffff;
+            --text-dark: #2c3e50;
+            --text-gray: #607d8b;
+            
+            --radius: 12px;
+            --shadow: 0 10px 40px rgba(0, 87, 196, 0.08);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: 'Heebo', sans-serif;
+            background: #ffffff;
+            /* 100dvh Fix for mobile browsers */
+            height: 100vh;
+            height: 100dvh; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-dark);
+            overflow: hidden;
+            background-image: radial-gradient(circle at 10% 10%, rgba(0, 87, 196, 0.03) 0%, transparent 40%);
+        }
+
+        .app-container {
+            width: 100%; height: 100%; max-width: 800px; max-height: 900px;
+            background: #ffffff; position: relative;
+            display: flex; flex-direction: column;
+            overflow: hidden;
+        }
+
+        @media(min-width: 800px) {
+            .app-container { 
+                height: 95vh; 
+                border-radius: var(--radius); 
+                box-shadow: var(--shadow);
+                border: 1px solid rgba(0,0,0,0.05);
+            }
+        }
+
+        /* --- Header --- */
+        .main-header {
+            flex: 0 0 60px;
+            width: 100%;
+            padding: 0 25px;
+            display: flex; align-items: center; justify-content: flex-end;
+            background: transparent;
+            z-index: 50;
+        }
+
+        /* --- Screens --- */
+        .screen {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            padding: 60px 20px 20px 20px;
+            display: flex; flex-direction: column;
+            opacity: 0; transform: translateX(30px); pointer-events: none;
+            transition: var(--transition); 
+            overflow: hidden;
+        }
+        .screen.active { opacity: 1; transform: translateX(0); pointer-events: all; z-index: 10; }
+
+        /* Typography & Components */
+        .college-name {
+            font-size: 3.5rem; font-weight: 900; color: var(--kinneret-blue);
+            margin-bottom: 5px; line-height: 1; animation: fadeIn 1s ease; text-align: center;
+        }
+        .main-slogan {
+            font-size: 3.2rem; font-weight: 900; color: var(--kinneret-blue);
+            line-height: 1.1; margin-bottom: 20px; text-align: center; animation: fadeIn 1.2s ease;
+        }
+        .main-slogan .dot { color: var(--kinneret-red); }
+
+        .intro-text { 
+            font-size: 1.1rem; font-weight: 300; margin-bottom: 30px; 
+            color: var(--text-dark); max-width: 550px; line-height: 1.5; text-align: center;
+        }
+        
+        button, input, textarea {
+            font-family: 'Heebo', sans-serif; /* Ensure font inheritance */
+        }
+
+        .btn {
+            padding: 12px 28px; border-radius: 50px; border: none; 
+            font-weight: 700; font-size: 1rem; cursor: pointer; 
+            transition: 0.2s; display: inline-flex; align-items: center; 
+            justify-content: center; gap: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        .btn-outline { 
+            background: white; border: 2px solid var(--kinneret-blue); color: var(--kinneret-blue); 
+        }
+        .btn-outline:hover, .btn-outline[data-sel="1"] { 
+            background: var(--kinneret-blue); color: white; transform: translateY(-2px);
+        }
+        
+        .btn-primary {
+            background: var(--kinneret-blue); color: white;
+            box-shadow: 0 5px 20px rgba(0, 87, 196, 0.3);
+            font-size: 1.1rem; padding: 14px 40px;
+        }
+        .btn-primary:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; }
+        
+        /* New Insight Button Style */
+        .btn-insight {
+            background: var(--kinneret-orange); 
+            color: white; 
+            border: none;
+            box-shadow: 0 6px 20px rgba(255, 140, 41, 0.4);
+            padding: 16px 32px;
+            font-size: 1.2rem;
+            font-weight: 800;
+            border-radius: 50px;
+            width: 100%; max-width: 300px;
+            animation: pulse-orange 2s infinite;
+        }
+        .btn-insight:hover { 
+            transform: translateY(-3px) scale(1.02); 
+            background: #ff9e40;
+            box-shadow: 0 10px 25px rgba(255, 140, 41, 0.5);
+        }
+        
+        @keyframes pulse-orange {
+            0% { box-shadow: 0 0 0 0 rgba(255, 140, 41, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 140, 41, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 140, 41, 0); }
+        }
+
+        .btn-share {
+            background: white; color: var(--kinneret-blue);
+            border: 2px solid var(--kinneret-blue);
+            padding: 12px 24px;
+        }
+        
+        /* Path Selection Cards */
+        .btn-card {
+            background: white; border: 2px solid #e3f2fd; padding: 25px; border-radius: 16px;
+            width: 100%; max-width: 320px; cursor: pointer; transition: 0.2s; text-align: center;
+            display: flex; flex-direction: column; align-items: center; gap: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+        }
+        .btn-card:hover { 
+            border-color: var(--kinneret-blue); transform: translateY(-5px); 
+            box-shadow: 0 10px 25px rgba(0, 87, 196, 0.1); 
+        }
+        .btn-card i { font-size: 2.2rem; color: var(--kinneret-orange); margin-bottom: 5px; }
+        .btn-card h3 { margin: 0; color: var(--kinneret-blue); font-weight: 900; font-size: 1.3rem; }
+        .btn-card p { margin: 0; color: var(--text-gray); font-weight: 400; font-size: 0.95rem; line-height: 1.4; }
+
+        /* Quiz Layout */
+        .progress-container {
+            flex: 0 0 auto; display: flex; align-items: center; gap: 15px; margin-bottom: 20px;
+            justify-content: center;
+        }
+        .progress-bar {
+            width: 100%; max-width: 300px; height: 8px; background: #f0f0f0; border-radius: 10px; overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%; background: var(--kinneret-blue); width: 0%; transition: width 0.4s ease;
+        }
+        .step-label { 
+            display: none; /* Hide text as requested */
+            font-size: 0.9rem; font-weight: 700; color: var(--kinneret-blue); white-space: nowrap; 
+        }
+
+        .quiz-flex-wrapper {
+            flex: 1; display: flex; flex-direction: column; justify-content: center; 
+            width: 100%; max-width: 600px; margin: 0 auto; overflow-y: auto;
+            padding-bottom: 10px;
+        }
+        
+        /* Question Title - Consistent Styling */
+        .q-title { 
+            font-family: 'Heebo', sans-serif; /* Explicit font family */
+            font-size: 1.5rem; 
+            font-weight: 800; 
+            margin-bottom: 25px; 
+            text-align: center; 
+            color: var(--text-dark); 
+            line-height: 1.3;
+            min-height: 65px; /* Prevent layout jumps */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .question-header-brand {
+            text-align: center;
+            font-size: 1.1rem; /* Increased from 0.85rem */
+            font-weight: 700;
+            margin-bottom: 15px;
+            opacity: 0.9;
+            line-height: 1.4;
+        }
+        .blue-text { color: var(--kinneret-blue); }
+        .red-text { color: var(--kinneret-red); }
+
+        /* Option Buttons - Consistent Styling */
+        .option-btn {
+            background: white; border: 1px solid #e0e0e0; padding: 16px 20px; 
+            border-radius: 12px; text-align: right; cursor: pointer; 
+            transition: 0.2s; position: relative; 
+            font-size: 1.1rem; /* Slightly larger for consistency */
+            font-weight: 400; display: flex; align-items: center; color: var(--text-dark);
+            margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+            font-family: 'Heebo', sans-serif;
+        }
+        .option-btn:hover { 
+            border-color: var(--kinneret-blue); background: #f8fbff; 
+            transform: translateX(-3px); color: var(--kinneret-blue); font-weight: 500;
+        }
+        .option-btn.selected {
+            background-color: var(--kinneret-blue); color: white; border-color: var(--kinneret-blue); transform: scale(0.98);
+        }
+        .option-btn.selected .option-key { background: rgba(255,255,255,0.3); color: white; }
+        .option-key { 
+            width: 24px; height: 24px; background: var(--secondary); color: var(--kinneret-blue);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.75rem; margin-left: 15px; flex-shrink: 0;
+        }
+
+        /* Unified Card/Module Style to match Option Buttons */
+        .card-module {
+            background: white; 
+            padding: 16px 20px; /* Matched to option-btn */
+            border-radius: 12px;
+            border: 1px solid #e0e0e0; cursor: pointer; transition: 0.2s;
+            text-align: right; margin-bottom: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+            display: flex; flex-direction: column; gap: 5px;
+            font-family: 'Heebo', sans-serif;
+            font-size: 1.1rem; /* Matched to option-btn */
+            color: var(--text-dark); /* Matched to option-btn */
+            font-weight: 500; /* Slightly bolder for categories, but closer to regular */
+        }
+        .card-module:hover { 
+            border-color: var(--kinneret-blue); background: #f8fbff; 
+            transform: translateX(-3px); 
+            color: var(--kinneret-blue); 
+        }
+        .card-module.selected { 
+            border-color: var(--kinneret-blue); background: var(--kinneret-blue); 
+            color: white; 
+        }
+        
+        /* Results Scroll Area */
+        .result-scroll { 
+            flex: 1; 
+            overflow-y: auto; 
+            padding: 10px 10px 80px 10px; /* Padding bottom for scrolling space */
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Results Styling */
+        .result-card {
+            background: white; border-radius: 16px; padding: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.05); margin-bottom: 20px;
+            border-top: 5px solid var(--kinneret-blue);
+        }
+        .mini-card {
+            background: #fafafa; padding: 18px; border-radius: 12px; margin-bottom: 15px;
+            border-right: 4px solid var(--kinneret-orange);
+        }
+        .mini-title { font-weight: 800; font-size: 1.1rem; margin-bottom: 10px; color: var(--text-dark); }
+        .reason-item { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 8px; line-height: 1.4; font-size: 0.95rem; }
+        .reason-item::before { content: "•"; color: var(--kinneret-blue); font-weight: bold; font-size: 1.2rem; line-height: 1.2rem; }
+        
+        .track-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-weight: 500; }
+        .track-bar-bg { flex: 1; height: 8px; background: #eee; margin: 0 15px; border-radius: 4px; }
+        .track-bar-fill { height: 100%; background: var(--kinneret-teal); border-radius: 4px; width: 0; transition: width 1s cubic-bezier(0.25, 0.8, 0.25, 1); }
+        
+        .bridge-text {
+            background: #fff8e1; border: 1px dashed var(--kinneret-orange); 
+            padding: 12px; border-radius: 8px; font-size: 0.95rem; 
+            color: #d84315; margin-top: 15px; display: flex; gap: 10px;
+        }
+
+        /* Overlay */
+        .overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 87, 196, 0.95); z-index: 100;
+            display: flex; justify-content: center; align-items: center;
+            opacity: 0; pointer-events: none; transition: 0.3s;
+        }
+        .overlay.active { opacity: 1; pointer-events: all; }
+        .modal {
+            background: white; width: 90%; max-width: 500px; padding: 40px;
+            border-radius: 20px; text-align: center;
+            max-height: 90vh; overflow-y: auto;
+        }
+
+        .btn-group-center { 
+            display: flex; flex-direction: column; align-items: center; gap: 15px; margin-top: 30px; 
+        }
+        
+        /* Toast */
+        .toast {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px);
+            background: #333; color: white; padding: 12px 24px; border-radius: 50px;
+            opacity: 0; transition: 0.3s; z-index: 200; pointer-events: none;
+        }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        /* Manual Copy Modal */
+        #manualCopyModal .modal {
+            text-align: right;
+        }
+        #manualCopyInput {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin: 15px 0;
+            font-size: 0.9rem;
+            direction: ltr;
+        }
+        
+        /* Warning for blob/preview environment */
+        .preview-warning {
+            font-size: 0.8rem;
+            color: #d9534f;
+            background: #f9f2f4;
+            padding: 8px;
+            border-radius: 4px;
+            margin-top: 10px;
+            display: none; /* Hidden by default */
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="main-header">
+        <i class="fa-solid fa-bars" style="color: var(--kinneret-blue); font-size: 1.2rem;"></i>
+    </div>
+
+    <!-- 1. Intro Screen -->
+    <div class="screen active" id="screenIntro">
+        <div style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+            <div class="college-name">האקדמית כנרת</div>
+            <h1 class="main-slogan">עושים. <span class="dot">חיים!</span></h1>
+            
+            <p class="intro-text">
+                כל חלום גדול מתחיל בצעד קטן. בוא/י נבין יחד מה מתאים לך.<br>
+                <strong>מבטיחים שיהיה מעניין!</strong><br>
+                <span style="font-size: 0.9rem; font-weight: 700; margin-top: 15px; display:block; color: var(--kinneret-blue);">שלך, סגל המחלקה לפסיכולוגיה</span>
+            </p>
+
+            <div style="width: 100%; max-width: 400px; text-align: center;">
+                <p style="text-align:center; font-weight:500; margin-bottom:15px; color: var(--text-gray);">איך נוח לך שנפנה אליך?</p>
+                <div class="btn-group-center" style="flex-direction: row; justify-content: center; margin-top: 0; margin-bottom: 25px;">
+                    <button class="btn btn-outline" onclick="selectGender('female')">לשון נקבה</button>
+                    <button class="btn btn-outline" onclick="selectGender('male')">לשון זכר</button>
+                </div>
+            </div>
+        </div>
+        <div class="disclaimer" style="text-align:center; font-size:0.7rem; color:black; margin-top:10px;">השאלון נועד להכוונה ראשונית ולהמחשת אפשרויות בלבד, ואינו מהווה ייעוץ מקצועי או אבחון.</div>
+    </div>
+
+    <!-- 1.5. Path Selection -->
+    <div class="screen" id="screenPath">
+        <div style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;">
+            <h2 style="color:var(--kinneret-blue); margin-bottom: 30px; font-weight: 900; font-size: 2rem;">בחר/י את אופי המסע שלך</h2>
+            
+            <div style="display:flex; flex-direction:column; gap:20px; width:100%; max-width:320px;">
+                <div class="btn-card" onclick="setPath('long')">
+                    <i class="fa-solid fa-route"></i>
+                    <h3>מסלול מלא</h3>
+                    <p>כ-5-7 דקות</p>
+                </div>
+                
+                <div class="btn-card" onclick="setPath('short')">
+                    <i class="fa-solid fa-bolt"></i>
+                    <h3>מסלול ממוקד</h3>
+                    <p>כ-2 דקות</p>
+                </div>
+            </div>
+            
+            <div style="margin-top: 40px;">
+                <button class="btn btn-outline" onclick="backToIntro()" style="border:none; color:#999; font-size: 0.9rem;">חזרה</button>
+            </div>
+            <div class="disclaimer" style="text-align:center; font-size:0.7rem; color:black; margin-top:20px;">השאלון נועד להכוונה ראשונית ולהמחשת אפשרויות בלבד, ואינו מהווה ייעוץ מקצועי או אבחון.</div>
+        </div>
+    </div>
+
+    <!-- 2. Quiz Screen -->
+    <div class="screen" id="screenQuiz">
+        <div class="progress-container">
+            <div class="step-label" id="stepLabel">שאלה 1</div>
+            <div class="progress-bar"><div class="progress-fill" id="progressBar"></div></div>
+        </div>
+
+        <div class="quiz-flex-wrapper">
+            <div id="quizContent"></div>
+        </div>
+        <!-- Back button removed as requested -->
+    </div>
+
+    <!-- 3. Results Screen -->
+    <div class="screen" id="screenResults">
+        <div class="result-scroll">
+            <h2 class="result-title" style="color: var(--kinneret-blue); font-weight: 900; text-align: center; font-size: 2rem;">הכיוון שלך</h2>
+            <p style="text-align: center; color: var(--text-gray); margin-bottom: 25px;">על סמך התשובות שלך — אלה המסלולים והכלים שכדאי לך לבדוק 👇</p>
+
+            <div class="result-card">
+                <h3 style="color: var(--kinneret-blue); margin-bottom: 15px;">המסלולים המובילים:</h3>
+                <div id="tracksResults"></div>
+                
+                <div class="mini-card" style="margin-top: 20px; background: #f4faff; border-right-color: var(--kinneret-blue);">
+                    <div class="mini-title">למה זה מתאים לך?</div>
+                    <div id="whyFitsText" style="line-height: 1.5; font-size: 0.95rem;"></div>
+                </div>
+            </div>
+
+            <div class="result-card" style="border-top-color: var(--kinneret-orange);">
+                <h3 style="color: var(--kinneret-orange); margin-bottom: 15px;">הכשרה מעשית מומלצת</h3>
+                <div id="trainingResults"></div>
+                <div class="mini-card" style="margin-top: 15px;">
+                    <div class="mini-title">הצעד הבא</div>
+                    <div id="nextStepText" style="font-size: 0.95rem;"></div>
+                </div>
+                <div id="bridgeContainer"></div>
+            </div>
+
+            <div class="btn-group-center">
+                <!-- Share button first as requested -->
+                <button class="btn btn-share" onclick="shareResult()">
+                    <i class="fa-solid fa-share-nodes"></i> שתף תוצאה
+                </button>
+
+                <!-- Insight button second, genderized dynamically -->
+                <button class="btn btn-insight" id="btnInsight" onclick="showInsight()">
+                    <i class="fa-regular fa-lightbulb"></i> קבל/י תובנה
+                </button>
+            </div>
+            
+            <div style="text-align:center; margin-top:30px;">
+                <button onclick="restartApp()" style="background:none; border:none; color:#999; text-decoration:underline;">התחל מחדש</button>
+            </div>
+            <div class="disclaimer" style="text-align:center; font-size:0.7rem; color:black; margin-top:20px;">השאלון נועד להכוונה ראשונית ולהמחשת אפשרויות בלבד, ואינו מהווה ייעוץ מקצועי או אבחון.</div>
+        </div>
+    </div>
+
+    <!-- 4. Insight Screen (Replaces Popup) -->
+    <div class="screen" id="screenInsight">
+        <div style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; max-width: 600px; margin: 0 auto;">
+            <i class="fa-solid fa-star" style="font-size: 4rem; color: var(--kinneret-yellow); margin-bottom: 25px;"></i>
+            
+            <h3 style="color: var(--kinneret-blue); font-weight: 900; font-size: 1.8rem; margin-bottom: 20px; line-height: 1.2;">
+                מדהים - מצאת כיוון נהדר להתפתחות אישית ומקצועית!
+            </h3>
+            
+            <p id="finalText" style="line-height: 1.6; margin-bottom: 30px; font-size: 1.1rem; color: #444;">
+                אצלנו בכנרת, אנחנו רואים אותך.<br>
+                עכשיו כששרטטנו יחד את המטרה, תן לנו ללוות אותך במסע אל עבר המטרה שלך.<br>
+                מזמינים אותך לעשות את הצעד הראשון אצלנו, איתנו!<br>
+                אם חשבנו על רעיון כל כך מדליק, תאמין לנו ובנו שנעשה הכול, אבל הכול כדי לסייע לך להתקדם ולצמוח.
+            </p>
+            
+            <div style="color: var(--kinneret-blue); font-weight: 900; margin-bottom: 30px; font-size: 1.1rem;">
+                שלך,<br>סגל המחלקה לפסיכולוגיה 💙
+            </div>
+            
+            <a href="https://www.kinneret.ac.il/program/%D7%AA%D7%97%D7%95%D7%9E%D7%99-%D7%9C%D7%99%D7%9E%D7%95%D7%93/%D7%91%D7%99%D7%AA-%D7%94%D7%A1%D7%A4%D7%A8-%D7%9C%D7%9E%D7%93%D7%A2%D7%99-%D7%94%D7%97%D7%91%D7%A8%D7%94-%D7%95%D7%94%D7%A8%D7%95%D7%97/b-a-%D7%91%D7%A4%D7%A1%D7%99%D7%9B%D7%95%D7%9C%D7%95%D7%92%D7%99%D7%94/" target="_blank" class="btn btn-primary" style="padding: 14px 30px; text-decoration: none; border-radius: 50px;">
+                ליצירת קשר והרשמה
+            </a>
+            
+            <div style="margin-top: 40px;">
+                <button onclick="backToResults()" style="background:none; border:none; color:#999; font-size: 0.9rem; text-decoration: underline; cursor: pointer;">
+                    חזרה לתוצאות
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Manual Copy Modal -->
+<div class="overlay" id="manualCopyModal">
+    <div class="modal">
+        <h3 style="color: var(--kinneret-blue); margin-bottom: 10px;">העתקת קישור</h3>
+        <p style="margin-bottom: 15px;">הקישור לתוצאה שלך מוכן.<br>אנא העתיקו אותו ושלחו:</p>
+        <input type="text" id="manualCopyInput" readonly>
+        
+        <!-- Preview Warning Message -->
+        <div id="blobWarning" class="preview-warning">
+            שים לב: הכתובת מתחילה ב-blob כי זו תצוגה מקדימה.
+            באתר אמיתי הכתובת תהיה תקינה.
+        </div>
+
+        <div style="display:flex; justify-content:center; gap:10px; margin-top: 15px;">
+            <button class="btn btn-primary" onclick="copyFromInput()">העתק</button>
+            <button class="btn btn-outline" onclick="document.getElementById('manualCopyModal').classList.remove('active')">סגור</button>
+        </div>
+    </div>
+</div>
+
+<div id="toast" class="toast">התוצאה הועתקה ללוח!</div>
+
+<script>
+/* --- CONFIG & DATA --- */
+const RANDOM_SEEDS = [12345, 67890, 11223, 44556, 77889, 99887, 55443, 22111, 33445, 66778, 90909, 10101, 30303, 50505, 70707, 80808, 40404, 20202, 60606, 12121];
+
+class SeededRNG {
+    constructor(seed) {
+        this.m = 0x80000000; this.a = 1103515245; this.c = 12345;
+        this.state = (typeof seed === 'number') ? seed : Math.floor(Math.random() * (this.m - 1));
+    }
+    nextFloat() {
+        this.state = (this.a * this.state + this.c) % this.m;
+        return this.state / (this.m - 1);
+    }
+}
+let rng = new SeededRNG(RANDOM_SEEDS[Math.floor(Math.random()*RANDOM_SEEDS.length)]);
+
+const say = {
+  female: { you: "את", choose: "בחרי", start: "לחץ כאן להתחלה", continue: "המשיכי", next: "המשך" },
+  male: { you: "אתה", choose: "בחר", start: "לחץ כאן להתחלה", continue: "המשך", next: "המשך" }
+};
+
+/* --- GENDER REPLACEMENT DICTIONARY --- */
+const genderMap = {
+    male: [
+        ["את/ה", "אתה"], ["מעדיפ/ה", "מעדיף"], ["מרגיש/ה", "מרגיש"], 
+        ["מדמיינ/ת", "מדמיין"], ["מתחברת/ת", "מתחבר"], ["נותן/ת", "נותן"], 
+        ["חושב/ת", "חושב"], ["פועל/ת", "פועל"], ["מצוין/ת", "מצוין"],
+        ["אפקטיבי/ת", "אפקטיבי"], ["מטופל/ת", "מטופל"], ["המדריך/ה", "המדריך"],
+        ["מדריך/ה", "מדריך"], ["תאמין לנו", "תאמין לנו"], ["תתן לנו", "תן לנו"]
+    ],
+    female: [
+        ["את/ה", "את"], ["מעדיפ/ה", "מעדיפה"], ["מרגיש/ה", "מרגישה"], 
+        ["מדמיינ/ת", "מדמיינת"], ["מתחברת/ת", "מתחברת"], ["נותן/ת", "נותנת"],
+        ["חושב/ת", "חושבת"], ["פועל/ת", "פועלת"], ["מצוין/ת", "מצוינת"],
+        ["אפקטיבי/ת", "אפקטיבית"], ["מטופל/ת", "מטופלת"], ["המדריך/ה", "המדריכה"],
+        ["מדריך/ה", "מדריכה"], ["תאמין לנו", "תאמיני לנו"], ["תן לנו", "תני לנו"]
+    ]
+};
+
+function applyGender(text) {
+    if (!text) return "";
+    let res = text;
+    const replacements = genderMap[state.gender];
+    replacements.forEach(([key, val]) => {
+        // Use split/join for global replacement without regex issues
+        res = res.split(key).join(val); 
+    });
+    return res;
+}
+
+/* --- CONTENT --- */
+const trackLabels = { CLI_A: "פסיכולוגיה קלינית", EDU: "פסיכולוגיה חינוכית", DEV: "פסיכולוגיה התפתחותית", SOC: "פסיכולוגיה חברתית", OCC: "פסיכולוגיה ארגונית", MED: "פסיכולוגיה רפואית", REH: "שיקום ותפקוד" };
+const trainLabels = { DOG: "כלבנות טיפולית", MIN: "הדרכת מיינדפולנס", GRP: "הנחיית קבוצות", RESIL: "אימון חוסן" };
+
+const trackExplanations = {
+    ORI_PEOPLE: "ניכר עניין באנשים ובקשר רגשי.", ORI_SYSTEMS: "נטייה לחשוב במונחים של מערכות ותהליכים.", CTX_CLINIC: "הסטינג הקליני — מפגש אישי ועומק — מתאים לך.", CTX_SCHOOL: "חיבור להשפעה במערכת החינוך.", CTX_ORG: "עולם העבודה והארגון מסקרן אותך.", ORI_1to1: "נוח לך בעבודה אישית ואינטימית.", ORI_GROUP: "משיכה לעבודה עם קבוצה ודינמיקה.", POP_KIDS: "עניין בעבודה עם ילדים ונוער.", POP_ADULTS: "מיקוד בעולם המבוגרים.", ACT_TOOLS: "חיפוש אחר כלים פרקטיים.", ACT_EMPATHY: "כוח בהקשבה והכלה.", ACT_MEANING: "חיפוש אחר משמעות ותובנה.",
+    CTX_HOSPITAL: "חיבור לעולם הרפואה והבריאות.", CTX_COMMUNITY: "רצון להשפיע בקהילה ובחברה.", POP_REHAB: "עניין בשיקום וחזרה לתפקוד.", POP_FAMILY: "עניין בעבודה עם משפחות.", POP_HEALTH: "חיבור לתחום הבריאות.", ACT_CLIMATE: "רגישות לאקלים חברתי וארגוני.", MOD_GROUP: "נטייה לעבודה קבוצתית.", MOD_DATA: "חשיבה אנליטית ומבוססת נתונים."
+};
+
+const qBase = [
+    { t: "באיזו מסגרת הכי היית רוצה לעבוד ביום־יום?", o: [{t:"קליניקה/מרפאה", s:{CLI_A:3}, tag:["CTX_CLINIC"]},{t:"בית ספר/מערכת חינוך", s:{EDU:3,DEV:1}, tag:["CTX_SCHOOL"]},{t:"ארגון/עולם העבודה", s:{OCC:3}, tag:["CTX_ORG"]}] },
+    { t: "עם איזו אוכלוסייה הכי טבעי לך לעבוד?", o: [{t:"ילדים/נוער", s:{DEV:2,EDU:2}, tag:["POP_KIDS"]},{t:"מבוגרים", s:{CLI_A:2,OCC:1}, tag:["POP_ADULTS"]},{t:"בריאות/שיקום", s:{MED:2,REH:2}, tag:["CTX_HOSPITAL"]}] },
+    { t: "איזה סוג השפעה הכי מרגש אותך?", o: [{t:"שינוי משמעותי אצל אדם אחד", s:{CLI_A:2,MED:1}, tag:["ORI_1to1"]},{t:"שינוי בקבוצה/כיתה", s:{EDU:2,SOC:2}, tag:["ORI_GROUP"]},{t:"שינוי במערכת שלמה", s:{OCC:2,SOC:2}, tag:["ORI_SYSTEMS"]}] },
+    { t: "מה יותר מדויק לך בעשייה היומיומית?", o: [{t:"שיחה, קשר ומשמעות", s:{CLI_A:2,SOC:1}, tag:["ACT_MEANING"]},{t:"כלים, תפקוד ותכניות פעולה", s:{REH:2,MED:1,EDU:1}, tag:["ACT_TOOLS"]},{t:"תרבות, נורמות ואקלים חברתי", s:{SOC:2,OCC:1}, tag:["ACT_CLIMATE"]}] },
+    { t: "איזה סטינג מרגיש לך הכי נכון?", o: [{t:"חדר טיפול שקט ואינטימי", s:{CLI_A:2,MED:1}, tag:["CTX_CLINIC"]},{t:"כיתה/חדר מורים ומרחב חינוכי", s:{EDU:2,DEV:1}, tag:["CTX_SCHOOL"]},{t:"חדר ישיבות/צוות ומרחב ארגוני", s:{OCC:2,SOC:1}, tag:["CTX_ORG"]}] },
+    { t: "מה הכי מדבר אלייך?", o: [{t:"אדם חוזר לאיזון וליציבות", s:{CLI_A:2,MED:1}},{t:"תלמיד/ה מצליח/ה ומתפתח/ת", s:{EDU:2,DEV:1}},{t:"צוות מתפקד טוב יותר לאורך זמן", s:{OCC:2,SOC:1}}] },
+    { t: "כשיש אתגר, מה הכיוון הטבעי שלך?", o: [{t:"להקשיב, להבין ולהבנות משמעות", s:{CLI_A:2,SOC:1}, tag:["ACT_EMPATHY"]},{t:"לבנות תכנית, כלים וצעדים ברורים", s:{EDU:2,REH:2}, tag:["ACT_TOOLS"]},{t:"לחבר אנשים סביב פתרון משותף", s:{SOC:2,OCC:1}, tag:["ORI_GROUP"]}] },
+    { t: "באיזה הקשר היית רוצה להשפיע יותר?", o: [{t:"בריאות/בתי חולים", s:{MED:2,REH:1}},{t:"קהילה/עמותה/רשות מקומית", s:{SOC:2,REH:1}},{t:"מערכת חינוך", s:{EDU:2,DEV:1}}] },
+    { t: "איזה תחום מושך אותך יותר?", o: [{t:"רווחה נפשית וטיפול במבוגרים", s:{CLI_A:3}},{t:"התפתחות, הורות וילדות", s:{DEV:2,EDU:2}},{t:"מוטיבציה, קריירה ועולם העבודה", s:{OCC:3}}] },
+    { t: "איך הכי נוח לך לעבוד?", o: [{t:"אחד־על־אחד", s:{CLI_A:2,MED:1}},{t:"בקבוצה", s:{SOC:2,EDU:1}},{t:"דרך מערכת/תהליך", s:{OCC:2,EDU:2}}] },
+    { t: "מה הכי מעניין אותך?", o: [{t:"רגשות, קשר ומשמעות", s:{CLI_A:2}},{t:"תפקוד, הסתגלות ושגרה", s:{REH:2,MED:1}},{t:"אקלים, שייכות ונורמות", s:{SOC:2,OCC:1}}] },
+    { t: "איזה סוג תהליך מתאים לך יותר?", o: [{t:"עומק לאורך זמן", s:{CLI_A:2}},{t:"תרגול קצר וישים", s:{MED:2,REH:2}},{t:"שינוי קבוצתי/מערכתי", s:{SOC:2,OCC:2}}] },
+    { t: "באיזו אוכלוסייה את/ה מרגיש/ה שליחות מיוחדת?", o: [{t:"הורים/משפחה", s:{DEV:2,CLI_A:1}},{t:"תלמידים/כיתה", s:{EDU:2,DEV:1}},{t:"עובדים/מנהלים", s:{OCC:2}}] },
+    { t: "מה מושך אותך בעולם הבריאות?", o: [{t:"חיבור גוף־נפש ורווחה", s:{MED:2}},{t:"התמודדות עם מחלה ומצבי חולי", s:{MED:3}},{t:"חזרה לתפקוד ושיקום", s:{REH:2,MED:2}}] },
+    { t: "איפה את/ה מרגיש/ה שאת/ה נותן/ת הכי הרבה ערך?", o: [{t:"בשיחה שיוצרת סדר פנימי", s:{CLI_A:2}},{t:"בהדרכה שיוצרת מסגרת ברורה", s:{EDU:2}},{t:"בתהליך שמארגן את המערכת", s:{OCC:2,SOC:1}}] },
+    { t: "איזה סוג מעורבות מתאים לך יותר?", o: [{t:"ליווי אישי", s:{CLI_A:2}},{t:"עבודה עם צוותים", s:{EDU:2,OCC:2}},{t:"עבודה עם קהילה", s:{SOC:2}}] },
+    { t: "מה יותר מדבר אליך ככיוון מקצועי?", o: [{t:"טיפול רגשי", s:{CLI_A:2,MED:1}},{t:"למידה והתפתחות", s:{DEV:2,EDU:2}},{t:"תעסוקה וביצועים", s:{OCC:2}}] },
+    { t: "היכן חשוב לך לראות תוצאות יחסית מהר?", o: [{t:"במצב רוח ובוויסות רגשי", s:{CLI_A:1,MED:1}},{t:"בתפקוד יומיומי", s:{REH:2,MED:1}},{t:"באקלים חברתי/מערכתי", s:{SOC:2,EDU:1}}] },
+    { t: "מה המוקד שמרתק אותך במיוחד?", o: [{t:"נבכי הנפש וטיפול אישי", s:{CLI_A:3}},{t:"תהליכי למידה, גדילה וסביבה", s:{EDU:2,DEV:2}},{t:"דינמיקה של אנשים, ניהול ומערכות", s:{OCC:3,SOC:1}}] },
+    { t: "מה היית רוצה להוביל בפועל?", o: [{t:"תהליך אישי של שינוי", s:{CLI_A:2,REH:1}},{t:"תכנית במסגרות חינוך", s:{EDU:2,DEV:1}},{t:"תהליך בארגון", s:{OCC:2}}] },
+    { t: "איזה סוג סביבה נותנת לך הכי הרבה אנרגיה?", o: [{t:"אינטימית ושקטה", s:{CLI_A:1,MED:1}},{t:"תוססת עם אנשים יחד", s:{SOC:2,EDU:1}},{t:"מאורגנת עם מטרות ותהליך", s:{OCC:2,REH:1}}] },
+    { t: "מה המוקד הטבעי שלך כדרך עבודה?", o: [{t:"הבנה רגשית והקשבה עמוקה", s:{CLI_A:2,SOC:1}},{t:"שינוי התנהגותי ותפקודי", s:{REH:2,MED:1}},{t:"שינוי חברתי/ארגוני/מערכתי", s:{SOC:2,OCC:2}}] }
+];
+
+const qTrain = [
+  { t: "איך הכי טבעי לך לעזור לאנשים להירגע?", o: [{t:"קשר וחוויה משותפת", tr:{DOG:3,RESIL:1}, tag:["TR_CO_REGULATION"]},{t:"תרגול פנימי וכלים אישיים", tr:{MIN:3,RESIL:1}, tag:["TR_SELF_REGULATION"]},{t:"קבוצה שמחזיקה ביחד", tr:{GRP:3,RESIL:1}, tag:["TR_GROUP_REGULATION"]}] },
+  { t: "מה הכי מתאר את הקשר שאת/ה רוצה ליצור?", o: [{t:"חווייתי ולא־מילולי", tr:{DOG:3}, tag:["TR_EMBODIED"]},{t:"שקט, מובנה ושיטתי", tr:{MIN:3}, tag:["TR_ATTENTION"]},{t:"דינמי, מוביל ומניע", tr:{GRP:3}, tag:["TR_ACTIVATION"]}] },
+  { t: "איפה את/ה מרגיש/ה הכי אפקטיבי/ת?", o: [{t:"מפגש אישי שמייצר אמון", tr:{DOG:2,RESIL:1}, tag:["TR_SAFE_SPACE"]},{t:"תרגול קצר שמעמיק לאורך זמן", tr:{MIN:2,RESIL:1}, tag:["TR_LONG_TERM_PRACTICE"]},{t:"סדנה קבוצתית שמזיזה אנשים", tr:{GRP:2,RESIL:1}, tag:["TR_FACILITATION"]}] },
+  { t: "איזה סוג שינוי מרגש אותך?", o: [{t:"שינוי רגשי דרך קשר", tr:{DOG:2}, tag:["TR_CO_REGULATION"]},{t:"שינוי דרך הרגלים וקשב", tr:{MIN:2}, tag:["TR_SELF_REGULATION"]},{t:"שינוי דרך דינמיקה קבוצתית", tr:{GRP:2}, tag:["TR_GROUP_REGULATION"]}] },
+  { t: "מה היית רוצה ללמד אנשים?", o: [{t:"להרגיש בטוחים", tr:{DOG:2}, tag:["TR_SAFE_SPACE"]},{t:"להחזיק קשב ונשימה", tr:{MIN:3}, tag:["TR_ATTENTION"]},{t:"לדבר ולהקשיב בקבוצה", tr:{GRP:3}, tag:["TR_FACILITATION"]}] },
+  { t: "מה הטון הטבעי שלך כמדריך/ה?", o: [{t:"מרגיע ומחבר", tr:{DOG:2}, tag:["TR_CO_REGULATION"]},{t:"שקט ומדייק", tr:{MIN:2}, tag:["TR_ATTENTION"]},{t:"אנרגטי ומניע", tr:{GRP:2}, tag:["TR_ACTIVATION"]}] },
+  { t: "מה הכי טבעי לך לבנות?", o: [{t:"מפגש חווייתי קצר “לשטח”", tr:{DOG:2,RESIL:2}, tag:["TR_FIELD_IMPACT"]},{t:"תכנית תרגול עקבית", tr:{MIN:2,RESIL:1}, tag:["TR_LONG_TERM_PRACTICE"]},{t:"סדרת מפגשים קבוצתית", tr:{GRP:2}, tag:["TR_FACILITATION"]}] },
+  { t: "איפה היית רוצה להפעיל את ההכשרה?", o: [{t:"טיפול/שיקום/רגש", tr:{DOG:2,RESIL:2}, tag:["TR_SAFE_SPACE"]},{t:"רווחה ובריאות", tr:{MIN:2,RESIL:2}, tag:["TR_SELF_REGULATION"]},{t:"חינוך/קהילה", tr:{GRP:2,RESIL:2}, tag:["TR_GROUP_REGULATION"]}] },
+  { t: "כשמישהו נסגר, מה בדרך כלל עובד לך?", o: [{t:"קשר דרך חוויה עדינה", tr:{DOG:2}, tag:["TR_CO_REGULATION"]},{t:"חזרה לנשימה וקשב", tr:{MIN:2}, tag:["TR_ATTENTION"]},{t:"מבנה קבוצתי שמחזיק", tr:{GRP:2}, tag:["TR_GROUP_REGULATION"]}] },
+  { t: "מה הכי כיף לך להעביר?", o: [{t:"פעילות גוף–רגש", tr:{DOG:2}, tag:["TR_EMBODIED"]},{t:"תרגול קצר שמשפר תפקוד", tr:{MIN:2}, tag:["ACT_TOOLS"]},{t:"דיון שמפתח את הקבוצה", tr:{GRP:2}, tag:["TR_FACILITATION"]}] },
+  { t: "במה היית רוצה להיות מצוין/ת?", o: [{t:"ליצור אמון מהר", tr:{DOG:2,RESIL:1}, tag:["TR_SAFE_SPACE"]},{t:"לבנות שגרה יציבה של תרגול", tr:{MIN:2,RESIL:1}, tag:["TR_LONG_TERM_PRACTICE"]},{t:"להוביל שיח קבוצתי חכם", tr:{GRP:2,RESIL:1}, tag:["TR_FACILITATION"]}] },
+  { t: "לאיזה משפט את/ה הכי מתחברת/ת?", o: [{t:"“אני מחבר/ת אנשים לחוויה”", tr:{DOG:3}, tag:["TR_EMBODIED"]},{t:"“אני מלמד/ת כלי פנימי”", tr:{MIN:3}, tag:["TR_SELF_REGULATION"]},{t:"“אני מוביל/ה קבוצה לשיח”", tr:{GRP:3}, tag:["TR_FACILITATION"]}] },
+  { t: "איזה סוג עשייה נותן לך אנרגיה?", o: [{t:"עבודה עם גוף ותנועה", tr:{DOG:2}, tag:["TR_EMBODIED"]},{t:"עבודה עם תודעה ונשימה", tr:{MIN:2}, tag:["TR_ATTENTION"]},{t:"עבודה עם דינמיקה ושיח", tr:{GRP:2}, tag:["TR_ACTIVATION"]}] },
+  { t: "כשיש עומס, איפה היית רוצה להשפיע?", o: [{t:"לתת עוגן רגשי", tr:{DOG:2}, tag:["TR_CO_REGULATION"]},{t:"לתת עוגן פנימי", tr:{MIN:2}, tag:["TR_SELF_REGULATION"]},{t:"לתת עוגן קבוצתי", tr:{GRP:2}, tag:["TR_GROUP_REGULATION"]}] }
+];
+
+const qTie = [
+  { t: "מה ההקשר הכי “נכון” עבורך?", o: [{t:"קליניקה", s:{CLI_A:3}},{t:"מערכת חינוך", s:{EDU:3,DEV:1}},{t:"ארגון/קהילה", s:{OCC:2,SOC:2}}] },
+  { t: "מה האוכלוסייה המרכזית שמעניינת אותך?", o: [{t:"מבוגרים", s:{CLI_A:2,OCC:1}},{t:"ילדים/נוער", s:{DEV:2,EDU:2}},{t:"בריאות/שיקום", s:{MED:2,REH:2}}] },
+  { t: "איזה סוג השפעה את/ה רוצה לייצר?", o: [{t:"ליווי אישי", s:{CLI_A:2,MED:1}},{t:"עבודה קבוצתית", s:{SOC:2,EDU:1}},{t:"שינוי מערכתי", s:{OCC:2,SOC:1}}] },
+  { t: "מה התוצר שהיית רוצה להשאיר אחריך?", o: [{t:"תהליך רגשי", s:{CLI_A:2}},{t:"תכנית כלים", s:{EDU:2,REH:2}},{t:"תרבות/אקלים", s:{SOC:2,OCC:1}}] }
+];
+
+const modules = {
+  M1: [
+    { t:"מה הכי מושך אותך במפגש עם אדם?", o:[{t:"קשר טיפולי",s:{CLI_A:3}},{t:"חיזוק רווחה ובריאות",s:{MED:2}},{t:"חיבור אנשים וקהילה",s:{SOC:2}}] },
+    { t:"איזו מטרה מרגישה לך הכי נכונה?", o:[{t:"עיבוד רגשי ותובנה",s:{CLI_A:3}},{t:"איזון גוף־נפש",s:{MED:2}},{t:"שייכות והשתלבות חברתית",s:{SOC:2}}] },
+    { t:"איפה היית רוצה לעבוד?", o:[{t:"קליניקה פרטית",s:{CLI_A:3}},{t:"מרפאה/מערכת רפואית",s:{MED:3}},{t:"מרכז קהילתי",s:{SOC:3}}] },
+    { t:"איזה סוג תהליך מתאים לך?", o:[{t:"טיפול מתמשך",s:{CLI_A:2}},{t:"ליווי סביב מצב רפואי",s:{MED:2}},{t:"תכנית קהילתית",s:{SOC:2}}] },
+    { t:"איזה נושא מושך אותך לעבוד איתו?", o:[{t:"חרדה/דימוי עצמי",s:{CLI_A:3}},{t:"כאב/מחלה",s:{MED:3}},{t:"בדידות/הדרה",s:{SOC:3}}] },
+    { t:"איך תרגיש/י הצלחה?", o:[{t:"אדם יציב ומווסת יותר",s:{CLI_A:2}},{t:"תפקוד לצד מחלה",s:{MED:2}},{t:"קבוצה/קהילה מחוברת",s:{SOC:2}}] },
+    { t:"מה מרגיש לך כמו שליחות?", o:[{t:"ליווי בשינוי אישי",s:{CLI_A:2}},{t:"תמיכה במערכת רפואית",s:{MED:2}},{t:"חיזוק חוסן קהילתי",s:{SOC:2}}] },
+    { t:"מה הטון הטבעי שלך?", o:[{t:"שקט ומכיל",s:{CLI_A:2}},{t:"מרגיע ומעשי",s:{MED:1}},{t:"מחבר ומניע",s:{SOC:2}}] }
+  ],
+  M2: [
+    { t:"מה הכי מושך אותך כאן?", o:[{t:"גדילה רגשית והתפתחות",s:{DEV:3}},{t:"למידה ותהליכים חינוכיים",s:{EDU:3}},{t:"עבודה עם הורים ומשפחה",s:{DEV:2,EDU:2}}] },
+    { t:"איפה היית רוצה לעבוד?", o:[{t:"קליניקה לילדים",s:{DEV:3}},{t:"שירות פסיכולוגי חינוכי/בית ספר",s:{EDU:3}},{t:"מרכז נוער/מסגרת קהילתית",s:{SOC:2}}] },
+    { t:"איזו השפעה הכי חשובה לך?", o:[{t:"ביטחון רגשי",s:{DEV:3}},{t:"קידום למידה ותפקוד לימודי",s:{EDU:3}},{t:"כיתה בטוחה ואקלים מיטיב",s:{EDU:2}}] },
+    { t:"מה הכי “מדויק” לך ביום־יום?", o:[{t:"מפגש הורה–ילד",s:{DEV:2}},{t:"עבודה עם מורה/צוות חינוכי",s:{EDU:3}},{t:"סדנה כיתתית/קבוצתית",s:{SOC:2}}] },
+    { t:"איפה היית רוצה להתמקצע?", o:[{t:"התקשרות/משפחה",s:{DEV:3}},{t:"אבחון/הוראה/למידה",s:{EDU:3}},{t:"אקלים, מניעה והתערבות מערכתית",s:{EDU:2}}] },
+    { t:"איך נראה בעיניך הישג משמעותי?", o:[{t:"הורה שיוצא עם כלים",s:{DEV:2}},{t:"מורה עם ארגז כלים ברור",s:{EDU:3}},{t:"כיתה שמתפקדת טוב יותר",s:{SOC:2}}] },
+    { t:"באיזו מסגרת היית רוצה להתעמק?", o:[{t:"בית ומשפחה",s:{DEV:3}},{t:"בית ספר",s:{EDU:3}},{t:"חיבור בית ספר–קהילה",s:{EDU:2}}] },
+    { t:"מה הטון הטבעי שלך?", o:[{t:"רך ומחזיק",s:{DEV:2}},{t:"ממוקד פתרונות",s:{EDU:3}},{t:"מוביל תהליכים",s:{SOC:2}}] }
+  ],
+  M3: [
+    { t:"מה הכי מושך אותך?", o:[{t:"התמודדות עם מחלה",s:{MED:3}},{t:"חזרה לתפקוד ושיקום",s:{REH:3}},{t:"עבודה בצוות רב־מקצועי",s:{MED:2}}] },
+    { t:"מה הכי מרגש לראות?", o:[{t:"אדם מרגיש פחות לבד מול מחלה",s:{MED:3}},{t:"חזרה לפעילות ולשגרה",s:{REH:3}},{t:"משפחה שמתארגנת סביב המצב",s:{REH:2}}] },
+    { t:"איפה היית רוצה לעבוד?", o:[{t:"מחלקה רפואית/בית חולים",s:{MED:3}},{t:"מרכז שיקום",s:{REH:3}},{t:"בריאות בקהילה",s:{MED:2}}] },
+    { t:"איזה סוג כלים היית רוצה להפעיל?", o:[{t:"תמיכה בתוך טיפול רפואי",s:{MED:2}},{t:"בניית שגרה ותפקוד",s:{REH:3}},{t:"תיאום ועבודה מערכתית בין אנשי מקצוע",s:{MED:2}}] },
+    { t:"מה מסקרן אותך במיוחד?", o:[{t:"כאב/חרדה סביב מחלה",s:{MED:3}},{t:"מוטוריקה/קוגניציה ותפקוד",s:{REH:3}},{t:"איכות חיים לאורך זמן",s:{MED:2}}] },
+    { t:"איך את/ה רואה את היום־יום שלך?", o:[{t:"שיחות במחלקה",s:{MED:2}},{t:"בניית תכנית שיקום",s:{REH:2}},{t:"סדנאות/הדרכות למטופלים ומשפחות",s:{MED:2}}] },
+    { t:"מה יהיה סימן להצלחה?", o:[{t:"בהירות והחזקה רגשית",s:{MED:2}},{t:"עלייה בתפקוד ועצמאות",s:{REH:3}},{t:"מערכת תמיכה יציבה סביב האדם",s:{REH:2}}] },
+    { t:"מה הטון הטבעי שלך?", o:[{t:"מרגיע ומכיל",s:{MED:1}},{t:"מעשי ובונה",s:{REH:2}},{t:"מחבר בין אנשים",s:{MED:2}}] }
+  ],
+  M4: [
+    { t:"מה הכי מושך אותך?", o:[{t:"אקלים ושייכות",s:{SOC:3}},{t:"כישורים חברתיים",s:{SOC:2}},{t:"שינוי בקהילה",s:{SOC:3}}] },
+    { t:"איפה היית רוצה להוביל?", o:[{t:"מרכז קהילתי",s:{SOC:3}},{t:"בית ספר",s:{EDU:2}},{t:"ארגון",s:{OCC:2}}] },
+    { t:"מה נתפס בעיניך כהשפעה משמעותית?", o:[{t:"שיפור קשרים בין אנשים",s:{SOC:3}},{t:"צמצום אלימות/קונפליקטים",s:{SOC:2}},{t:"יצירת שיתופי פעולה",s:{SOC:3}}] },
+    { t:"מה סגנון העבודה שהכי מתאים לך?", o:[{t:"הנחיית קבוצות",s:{SOC:2}},{t:"תכניות קהילה",s:{SOC:3}},{t:"ייעוץ למסגרות",s:{SOC:2}}] },
+    { t:"עם מי היית רוצה לעבוד יותר?", o:[{t:"נוער",s:{SOC:1}},{t:"משפחות/קהילות",s:{SOC:3}},{t:"צוותים",s:{SOC:2}}] },
+    { t:"מה התוצר שהיית רוצה לראות?", o:[{t:"קבוצה חזקה",s:{SOC:2}},{t:"קהילה מחוברת",s:{SOC:3}},{t:"“שפה משותפת” שמייצרת תיאום",s:{SOC:2}}] },
+    { t:"איפה את/ה הכי פורח/ת?", o:[{t:"עם אנשים יחד",s:{SOC:2}},{t:"בתהליך ארוך ומתפתח",s:{SOC:2}},{t:"בחיבור בין קבוצות",s:{SOC:3}}] },
+    { t:"מה הטון הטבעי שלך?", o:[{t:"מניע",s:{SOC:2}},{t:"מכוון",s:{SOC:1}},{t:"מארגן",s:{SOC:1}}] }
+  ],
+  M5: [
+    { t:"מה הכי מושך אותך?", o:[{t:"קריירה ומוטיבציה",s:{OCC:3}},{t:"תרבות ארגונית",s:{OCC:3}},{t:"רווחה ושחיקה",s:{OCC:2}}] },
+    { t:"איפה היית רוצה להשפיע?", o:[{t:"גיוס והערכה",s:{OCC:3}},{t:"מנהיגות ופיתוח מנהלים",s:{OCC:3}},{t:"תכניות רווחה ו־Well-being",s:{OCC:2}}] },
+    { t:"מה התוצר שמדליק אותך?", o:[{t:"ביצועים ותוצאות",s:{OCC:3}},{t:"עבודה חכמה ויעילה",s:{OCC:3}},{t:"תחושת רווחה טובה יותר",s:{OCC:2}}] },
+    { t:"מה סגנון העבודה שלך?", o:[{t:"ייעוץ ותהליכים",s:{OCC:3}},{t:"סדנאות",s:{OCC:2}},{t:"מדיניות ונהלים",s:{OCC:2}}] },
+    { t:"מה מסקרן אותך במיוחד?", o:[{t:"בחירת עובדים והתאמה לתפקיד",s:{OCC:3}},{t:"למידה בארגון ופיתוח עובדים",s:{OCC:2}},{t:"קונפליקטים וניהול מתחים",s:{OCC:2}}] },
+    { t:"מה ייחשב לדעתך כהצלחה בעבודה עם אנשים?", o:[{t:"קידום והתפתחות בקריירה",s:{OCC:3}},{t:"הפחתת שחיקה",s:{OCC:2}},{t:"חיזוק שייכות ומחוברות",s:{OCC:2}}] },
+    { t:"עם מי היית רוצה לעבוד?", o:[{t:"עובדים/מנהלים",s:{OCC:2}},{t:"אנשי משאבי אנוש",s:{OCC:2}},{t:"“המערכת” – תהליכים חוצי־ארגון",s:{OCC:3}}] },
+    { t:"מה הטון הטבעי שלך?", o:[{t:"ממקד מטרות",s:{OCC:2}},{t:"מחבר אנשים",s:{OCC:1}},{t:"בונה תהליך",s:{OCC:2}}] }
+  ]
+};
+
+/* --- STATE --- */
+let state = { gender: 'female', phase: 'intro', length: 'full', scores: {tracks:{}, train:{}}, tags:[], queue:[], qIndex:0 };
+let isNavigating = false;
+
+/* --- FUNCTIONS --- */
+function seededShuffle(arr) {
+    if(!arr) return [];
+    let a = arr.slice();
+    for(let i=a.length-1; i>0; i--) {
+        const j = Math.floor(rng.nextFloat() * (i+1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
+function initScores() {
+    for(let k in trackLabels) state.scores.tracks[k]=0;
+    for(let k in trainLabels) state.scores.train[k]=0;
+}
+
+function selectGender(gender) {
+    if (isNavigating) return;
+    isNavigating = true;
+    state.gender = gender;
+    document.getElementById('screenIntro').classList.remove('active');
+    document.getElementById('screenPath').classList.add('active');
+    setTimeout(() => isNavigating = false, 500);
+}
+
+function setPath(path) {
+    if (isNavigating) return;
+    isNavigating = true;
+    state.length = path;
+    start();
+    setTimeout(() => isNavigating = false, 500);
+}
+
+function backToIntro() {
+    document.getElementById('screenPath').classList.remove('active');
+    document.getElementById('screenIntro').classList.add('active');
+}
+
+function start() {
+    initScores();
+    document.getElementById('screenPath').classList.remove('active');
+    document.getElementById('screenQuiz').classList.add('active');
+    
+    let flow = [];
+    
+    if (state.length === 'short') {
+        // Short: 20 Questions (8 Base + 8 Mod + 4 Train)
+        seededShuffle(qBase).slice(0,8).forEach(q => flow.push({...q, type:'base'}));
+        
+        let allModQs = [];
+        Object.values(modules).forEach(m => allModQs.push(...m));
+        seededShuffle(allModQs).slice(0,8).forEach(q => flow.push({...q, type:'module_flat'}));
+        
+        seededShuffle(qTrain).slice(0,4).forEach(q => flow.push({...q, type:'train'}));
+    } else {
+        // Full Path
+        seededShuffle(qBase).forEach(q => flow.push({...q, type:'base'}));
+        flow.push({type:'module_select'}); 
+        seededShuffle(qTrain).forEach(q => flow.push({...q, type:'train'}));
+        seededShuffle(qTie).forEach(q => flow.push({...q, type:'tie'}));
+    }
+    
+    state.queue = flow;
+    state.qIndex = 0;
+    state.phase = 'base';
+    renderQ();
+}
+
+function renderQ() {
+    if(state.qIndex >= state.queue.length) { showRes(); return; }
+    
+    const q = state.queue[state.qIndex];
+    const container = document.getElementById('quizContent');
+    container.innerHTML = '';
+
+    // Add Header
+    const brandDiv = document.createElement('div');
+    brandDiv.className = 'question-header-brand';
+    brandDiv.innerHTML = `<span class="blue-text">האקדמית כנרת</span> | <span class="red-text">עושים. חיים!</span> | <span class="blue-text">המחלקה לפסיכולוגיה</span>`;
+    container.appendChild(brandDiv);
+
+    const totalQ = state.queue.length; 
+    const currentQ = state.qIndex + 1;
+    const displayTotal = (state.length === 'short') ? 20 : (q.type === 'module_select' ? '...' : totalQ);
+    
+    const stepLabel = document.getElementById('stepLabel');
+    if (stepLabel) stepLabel.style.display = 'none'; 
+    
+    const progressBar = document.getElementById('progressBar');
+    if (progressBar) {
+        const pct = ((state.qIndex) / state.queue.length) * 100;
+        progressBar.style.width = pct + '%';
+    }
+
+    if (q.type === 'module_select') {
+        const h = document.createElement('div');
+        h.className = 'q-title';
+        h.innerText = say[state.gender].choose + " את התחום שהכי מסקרן אותך:";
+        container.appendChild(h);
+        
+        Object.keys(modules).forEach(k => {
+             let title = "";
+             if(k==='M1') title="טיפול, רגש ופרט";
+             if(k==='M2') title="חינוך, ילדים ומשפחה";
+             if(k==='M3') title="ארגונים וניהול";
+             if(k==='M4') title="חברה וקהילה";
+             if(k==='M5') title="בריאות ושיקום";
+             
+             const div = document.createElement('div');
+             div.className = 'card-module';
+             div.innerText = title; 
+             div.onclick = () => {
+                 Array.from(container.children).forEach(c => c.style.pointerEvents = 'none'); 
+                 div.classList.add('selected');
+                 setTimeout(() => {
+                    const modQs = modules[k];
+                    const newQs = modQs.map(mq => ({...mq, type:'module'}));
+                    state.queue.splice(state.qIndex + 1, 0, ...newQs);
+                    state.qIndex++;
+                    renderQ();
+                 }, 400); 
+             };
+             container.appendChild(div);
+        });
+        return;
+    }
+
+    // Apply gender fix to Question Title
+    const finalTitle = applyGender(q.t);
+    
+    const h = document.createElement('div');
+    h.className = 'q-title';
+    h.innerText = finalTitle;
+    container.appendChild(h);
+    
+    const opts = seededShuffle(q.o);
+    opts.forEach(opt => {
+        // Apply gender fix to Options as well
+        const finalOptText = applyGender(opt.t);
+
+        const div = document.createElement('div');
+        div.className = 'option-btn';
+        div.innerHTML = `<span style="flex:1;">${finalOptText}</span> <span class="option-key"></span>`;
+        div.onclick = () => {
+            Array.from(container.children).forEach(c => c.style.pointerEvents = 'none'); 
+            div.classList.add('selected');
+
+            if(opt.s) for(let k in opt.s) state.scores.tracks[k] += opt.s[k];
+            if(opt.tr) for(let k in opt.tr) state.scores.train[k] += opt.tr[k];
+            if(opt.tag) state.tags.push(...opt.tag);
+            
+            setTimeout(() => {
+                state.qIndex++;
+                renderQ();
+            }, 400);
+        };
+        container.appendChild(div);
+    });
+}
+
+function showRes() {
+    document.getElementById('screenQuiz').classList.remove('active');
+    document.getElementById('screenResults').classList.add('active');
+    
+    const sortedTracks = Object.entries(state.scores.tracks).sort((a,b)=>b[1]-a[1]);
+    const top3 = sortedTracks.slice(0,3);
+    const sum = top3.reduce((a,c)=>a+c[1],0) || 1; // Prevent division by zero
+    
+    // Safety check if top3 is empty
+    if (top3.length === 0) {
+        forceDefaultResult();
+        return;
+    }
+
+    const tCont = document.getElementById('tracksResults');
+    tCont.innerHTML = '';
+    top3.forEach(t => {
+         const pct = Math.round((t[1]/sum)*100);
+         tCont.innerHTML += `
+         <div class="track-row">
+            <span class="track-name">${trackLabels[t[0]]}</span>
+            <div class="track-bar-bg"><div class="track-bar-fill" style="width:${pct}%"></div></div>
+            <span>${pct}%</span>
+         </div>`;
+    });
+    
+    const tagCounts = {};
+    state.tags.forEach(x => { tagCounts[x] = (tagCounts[x]||0)+1; });
+    const topTags = Object.keys(tagCounts).sort((a,b)=>tagCounts[b]-tagCounts[a]).slice(0,5);
+    
+    let reasons = topTags.map(t => trackExplanations[t]).filter(Boolean);
+    if(reasons.length < 3) {
+        // Fallback generic reasons if specific tags are missing
+        top3.forEach(t => {
+             if (t[0] === 'CLI_A') reasons.push(trackExplanations['CTX_CLINIC']);
+             if (t[0] === 'EDU') reasons.push(trackExplanations['CTX_SCHOOL']);
+             if (t[0] === 'OCC') reasons.push(trackExplanations['CTX_ORG']);
+             if (t[0] === 'SOC') reasons.push(trackExplanations['CTX_COMMUNITY'] || "חיבור חזק לעשייה חברתית וקהילתית.");
+             if (t[0] === 'MED') reasons.push(trackExplanations['CTX_HOSPITAL'] || "חיבור לעולם הרפואה והבריאות.");
+             if (t[0] === 'DEV') reasons.push(trackExplanations['POP_KIDS'] || "רצון לעבוד עם ילדים ומשפחות.");
+             if (t[0] === 'REH') reasons.push(trackExplanations['POP_REHAB'] || "רצון לסייע בחזרה לתפקוד.");
+        });
+    }
+    // De-duplicate and fallback if still empty
+    reasons = [...new Set(reasons)].filter(Boolean);
+    if (reasons.length === 0) reasons.push("השילוב הייחודי של תשובותיך מצביע על כיוון זה.");
+
+    document.getElementById('whyFitsText').innerHTML = reasons.map(r => `<div class="reason-item">${r}</div>`).join('');
+    
+    const sortedTrain = Object.entries(state.scores.train).sort((a,b)=>b[1]-a[1]);
+    const topTrainings = sortedTrain.slice(0, 2);
+    
+    document.getElementById('trainingResults').innerHTML = topTrainings.map(t => 
+        `<div style="font-weight:800; font-size:1.1rem; color:#333; margin-bottom:5px;">${trainLabels[t[0]]}</div>`
+    ).join('');
+    
+    const leadTrack = top3[0][0];
+    let nextStep = "לבחור קורסי ליבה ולשלב התנסות בשטח.";
+    if(leadTrack==='CLI_A') nextStep = "לבחור קורסי יסוד בפסיכותרפיה ולהתקרב לסטינג קליני.";
+    if(leadTrack==='EDU') nextStep = "לחפש התנסות במסגרת חינוכית ולהתמקד בהתפתחות.";
+    if(leadTrack==='OCC') nextStep = "לשלב קורסים ארגוניים ולחפש פרויקט בארגון.";
+    document.getElementById('nextStepText').innerText = nextStep;
+    
+    const bridgeText = generateBridge(leadTrack, topTrainings[0][0]);
+    const bridgeContainer = document.getElementById('bridgeContainer');
+    bridgeContainer.className = 'bridge-text';
+    bridgeContainer.innerHTML = `<i class="fa-solid fa-link"></i> ${bridgeText}`;
+
+    // Genderize the Insight Button Text Here
+    const btnInsight = document.getElementById('btnInsight');
+    const insightText = state.gender === 'female' ? "קבלי תובנה" : "קבל תובנה";
+    btnInsight.innerHTML = `<i class="fa-regular fa-lightbulb"></i> ${insightText}`;
+}
+
+function generateBridge(track, train) {
+    if(track === 'CLI_A' && train === 'DOG') return "בקלינית, קשר הוא הכול; כלבנות טיפולית יכולה לתת לך כלי חווייתי שמאיץ אמון ופותח דלת לעבודה רגשית.";
+    if(track === 'CLI_A' && train === 'MIN') return "בקלינית, ויסות הוא מפתח; מיינדפולנס נותן תרגול פנימי שמחזיק גם מחוץ לחדר הטיפול.";
+    if(track === 'EDU' && train === 'GRP') return "בחינוכית, עבודה עם כיתה/צוות היא הלב; הנחיית קבוצות היא המשך טבעי שמאפשר השפעה רחבה.";
+    if(track === 'SOC' && train === 'GRP') return "בחברתית, הקבוצה היא השפה שלך; הנחיית קבוצות מתאימה בדיוק לדרך שבה את/ה חושב/ת ופועל/ת.";
+    if(track === 'REH' && train === 'RESIL') return "בשיקום, חוסן הוא ליבת העבודה: הסתגלות, צעדים קטנים, התמדה ובנייה מחדש של תפקוד.";
+    if(track === 'OCC' && train === 'GRP') return "בארגונית, סדנאות וצוותים הם “מגרש המשחקים” המרכזי; הנחיה טובה תיתן לך יתרון אמיתי.";
+    return `השילוב בין ${trackLabels[track]||'המסלול'} ל${trainLabels[train]||'ההכשרה'} יעניק לך יתרון ייחודי וארגז כלים מגוון בשוק העבודה.`;
+}
+
+// Updated showInsight to navigate to a new screen instead of opening a modal
+function showInsight() { 
+    // Prepare gendered text for the final screen content
+    const finalText = document.getElementById('finalText');
+    if(finalText) {
+        let txt = finalText.innerHTML;
+        // Apply gender replacements using the helper function
+        finalText.innerHTML = applyGender(txt);
+    }
+
+    // Switch Screens
+    document.getElementById('screenResults').classList.remove('active');
+    document.getElementById('screenInsight').classList.add('active');
+    
+    // Scroll to top
+    window.scrollTo(0, 0);
+}
+
+function backToResults() {
+    document.getElementById('screenInsight').classList.remove('active');
+    document.getElementById('screenResults').classList.add('active');
+}
+
+// === ROBUST SHARING MECHANISM V5 ===
+function shareResult() {
+    const txt = "גיליתי את המסלול שלי בפסיכולוגיה במכללת כנרת! בואו לבדוק גם:";
+    const disclaimer = "* השאלון נועד להכוונה ראשונית ולהמחשת אפשרויות בלבד.";
+    
+    // Calculate top results
+    const sortedTracks = Object.entries(state.scores.tracks).sort((a,b)=>b[1]-a[1]);
+    const topTrack = sortedTracks[0][0];
+    const sortedTrain = Object.entries(state.scores.train).sort((a,b)=>b[1]-a[1]);
+    const topTrain = sortedTrain[0][0];
+    
+    // Clean URL and add HASH (more robust than query params)
+    const baseUrl = window.location.href.split('#')[0].split('?')[0];
+    const shareUrl = `${baseUrl}#track=${topTrack}&train=${topTrain}`;
+    const fullText = `${txt}\n${shareUrl}\n\n${disclaimer}`;
+
+    // Prefer Manual Modal to ensure success on all devices/browsers
+    document.getElementById('manualCopyInput').value = fullText;
+    
+    // Check if we are in blob environment and warn user
+    if (window.location.protocol === 'blob:') {
+        document.getElementById('blobWarning').style.display = 'block';
+    } else {
+        document.getElementById('blobWarning').style.display = 'none';
+    }
+    
+    document.getElementById('manualCopyModal').classList.add('active');
+}
+
+function copyFromInput() {
+    const input = document.getElementById('manualCopyInput');
+    input.select();
+    input.setSelectionRange(0, 99999); // Mobile fix
+    
+    // Try modern API first
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(input.value).then(() => {
+             document.getElementById('manualCopyModal').classList.remove('active');
+             showToast("הועתק בהצלחה!");
+        }).catch(() => {
+             // Fallback to execCommand
+             tryExecCopy();
+        });
+    } else {
+        tryExecCopy();
+    }
+}
+
+function tryExecCopy() {
+    try {
+        const successful = document.execCommand('copy');
+        if (successful) {
+            document.getElementById('manualCopyModal').classList.remove('active');
+            showToast("הועתק בהצלחה!");
+        } else {
+             showToast("אנא העתיקו ידנית");
+        }
+    } catch(e) {
+        showToast("אנא העתיקו ידנית");
+    }
+}
+
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.innerText = msg;
+    t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'), 3000);
+}
+
+function checkHashParams() {
+    // Look for hash params first (new robust way), then fallback to query params (old way)
+    let track, train;
+    
+    // 1. Check Hash (#track=...)
+    if (window.location.hash) {
+        const hash = window.location.hash.substring(1); // remove #
+        const params = new URLSearchParams(hash);
+        track = params.get('track');
+        train = params.get('train');
+    } 
+    // 2. Fallback to Search (?track=...)
+    else if (window.location.search) {
+        const params = new URLSearchParams(window.location.search);
+        track = params.get('track');
+        train = params.get('train');
+    }
+
+    if (track && train && trackLabels[track] && trainLabels[train]) {
+        // Ensure state is initialized so graph renders correctly
+        initScores();
+        
+        // Valid shared link detected
+        document.getElementById('screenIntro').classList.remove('active');
+        state.scores.tracks[track] = 100; // Force high score for winner
+        state.scores.train[train] = 100;
+        document.getElementById('screenResults').classList.add('active');
+        showRes();
+        document.querySelector('.result-title').innerText = "תוצאה ששותפה איתך";
+    }
+}
+
+// Renamed and refactored function to handle restart gracefully
+function restartApp() {
+    // 1. Reset State
+    state = { gender: 'female', phase: 'intro', length: 'full', scores: {tracks:{}, train:{}}, tags:[], queue:[], qIndex:0 };
+    isNavigating = false;
+
+    // 2. Clear UI (SPA Style Reset)
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screenIntro').classList.add('active');
+
+    // 3. Try to clear URL hash for aesthetics, but ignore errors if blocked (common in blob/preview)
+    try {
+        if (window.location.hash || window.location.search) {
+             history.replaceState(null, null, window.location.pathname);
+        }
+    } catch (e) {
+        console.warn("Could not clear hash in this environment (harmless):", e);
+    }
+}
+
+/* --- SAFEGUARDS --- */
+function forceDefaultResult() {
+    console.warn("CRITICAL ERROR: Safe Mode Engaged.");
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screenResults').classList.add('active');
+    
+    document.getElementById('tracksResults').innerHTML = `
+         <div class="track-row"><span class="track-name">פסיכולוגיה קלינית</span><div class="track-bar-bg"><div class="track-bar-fill" style="width:85%"></div></div><span>85%</span></div>
+         <div class="track-row"><span class="track-name">פסיכולוגיה חינוכית</span><div class="track-bar-bg"><div class="track-bar-fill" style="width:70%"></div></div><span>70%</span></div>`;
+    
+    document.getElementById('whyFitsText').innerHTML = `<div class="reason-item">זיהינו חיבור חזק לעולם הטיפול ולעבודה עם אנשים.</div>`;
+    document.getElementById('trainingResults').innerHTML = `<div style="font-weight:800; font-size:1.1rem; color:#333;">הדרכת מיינדפולנס</div>`;
+    document.getElementById('nextStepText').innerText = "כלי זה יאפשר לך להעניק למטופלים רוגע, מיקוד וויסות רגשי.";
+}
+
+window.onerror = function(msg, url, line, col, error) {
+    console.error("Global Error:", msg, error);
+    forceDefaultResult();
+    return true; 
+};
+
+// Check on load
+checkHashParams();
+
+</script>
+</body>
+</html>

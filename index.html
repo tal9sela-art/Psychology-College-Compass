@@ -322,25 +322,26 @@
         }
         .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-        /* Manual Copy Modal */
-        #manualCopyModal .modal {
-            text-align: right;
+        /* Share Options Modal (Replaces Manual Copy) */
+        #shareOptionsModal .modal {
+            text-align: center;
         }
-        /* Changed from input to textarea for multiline support */
-        #manualCopyInput {
-            width: 100%;
-            padding: 15px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            margin: 15px 0;
-            font-size: 0.95rem;
-            direction: ltr; /* Keeps URL LTR */
-            height: 150px;
-            resize: none;
-            font-family: 'Heebo', sans-serif;
-            background: #f9f9f9;
+        .share-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 25px;
         }
+        .btn-whatsapp {
+            background: #25D366; color: white; border: none;
+        }
+        .btn-whatsapp:hover { background: #128C7E; }
         
+        .btn-copy-link {
+            background: #eee; color: #333; border: none;
+        }
+        .btn-copy-link:hover { background: #ddd; }
+
         /* Warning for blob/preview environment */
         .preview-warning {
             font-size: 0.8rem;
@@ -498,23 +499,30 @@
     </div>
 </div>
 
-<!-- Manual Copy Modal -->
-<div class="overlay" id="manualCopyModal">
+<!-- Share Options Modal (Replaces Manual Copy) -->
+<div class="overlay" id="shareOptionsModal">
     <div class="modal">
-        <h3 style="color: var(--kinneret-blue); margin-bottom: 10px;">העתקת קישור</h3>
-        <p style="margin-bottom: 15px;">הקישור לתוצאה שלך מוכן.<br>אנא העתיקו אותו ושלחו:</p>
-        <!-- CHANGED INPUT TO TEXTAREA -->
-        <textarea id="manualCopyInput" readonly></textarea>
+        <h3 style="color: var(--kinneret-blue); margin-bottom: 10px;">שיתוף תוצאה</h3>
+        <p style="margin-bottom: 15px;">איך תרצו לשתף את התוצאה?</p>
         
+        <div class="share-grid">
+            <button class="btn btn-whatsapp" onclick="shareToWhatsapp()">
+                <i class="fa-brands fa-whatsapp"></i> שיתוף בוואטסאפ
+            </button>
+            
+            <button class="btn btn-copy-link" onclick="copyLink()">
+                <i class="fa-regular fa-copy"></i> העתקת קישור
+            </button>
+        </div>
+
         <!-- Preview Warning Message -->
         <div id="blobWarning" class="preview-warning">
             שים לב: הכתובת מתחילה ב-blob כי זו תצוגה מקדימה.
             באתר אמיתי הכתובת תהיה תקינה.
         </div>
 
-        <div style="display:flex; justify-content:center; gap:10px; margin-top: 15px;">
-            <button class="btn btn-primary" onclick="copyFromInput()">העתק</button>
-            <button class="btn btn-outline" onclick="document.getElementById('manualCopyModal').classList.remove('active')">סגור</button>
+        <div style="margin-top: 25px;">
+            <button class="btn btn-outline" onclick="document.getElementById('shareOptionsModal').classList.remove('active')">סגור</button>
         </div>
     </div>
 </div>
@@ -993,10 +1001,9 @@ async function shareResult() {
         }
     }
 
-    // Fallback: Manual Copy Modal
-    // Add extra spaces around URL to prevent stickiness
-    const fullText = `${txt}\n\n${shareUrl}\n\n${disclaimer}`;
-    document.getElementById('manualCopyInput').value = fullText;
+    // Fallback: Share Options Modal
+    // Store variables globally for buttons to use
+    window.shareContext = { text: txt, url: shareUrl, disclaimer: disclaimer };
     
     // Check if we are in blob environment and warn user
     if (window.location.protocol === 'blob:') {
@@ -1005,40 +1012,38 @@ async function shareResult() {
         document.getElementById('blobWarning').style.display = 'none';
     }
     
-    document.getElementById('manualCopyModal').classList.add('active');
+    document.getElementById('shareOptionsModal').classList.add('active');
 }
 
-function copyFromInput() {
-    const input = document.getElementById('manualCopyInput');
-    input.select();
-    input.setSelectionRange(0, 99999); // Mobile fix
+function shareToWhatsapp() {
+    if (!window.shareContext) return;
+    const { text, url, disclaimer } = window.shareContext;
+    const fullMsg = `${text}\n${url}\n\n${disclaimer}`;
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(fullMsg)}`;
+    window.open(whatsappUrl, '_blank');
+}
+
+function copyLink() {
+    if (!window.shareContext) return;
+    const { text, url, disclaimer } = window.shareContext;
+    const fullText = `${text}\n${url}\n\n${disclaimer}`;
     
-    // Try modern API first
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(input.value).then(() => {
-             document.getElementById('manualCopyModal').classList.remove('active');
-             showToast("הועתק בהצלחה!");
-        }).catch(() => {
-             // Fallback to execCommand
-             tryExecCopy();
-        });
-    } else {
-        tryExecCopy();
-    }
-}
-
-function tryExecCopy() {
+    // Use the legacy manual copy input as a helper, but it's hidden in this modal version
+    // We can create a temporary textarea
+    const tempInput = document.createElement('textarea');
+    tempInput.value = fullText;
+    document.body.appendChild(tempInput);
+    tempInput.select();
+    tempInput.setSelectionRange(0, 99999);
+    
     try {
-        const successful = document.execCommand('copy');
-        if (successful) {
-            document.getElementById('manualCopyModal').classList.remove('active');
-            showToast("הועתק בהצלחה!");
-        } else {
-             showToast("אנא העתיקו ידנית");
-        }
-    } catch(e) {
-        showToast("אנא העתיקו ידנית");
+        document.execCommand('copy');
+        showToast("הועתק בהצלחה!");
+        document.getElementById('shareOptionsModal').classList.remove('active');
+    } catch (e) {
+        alert("לא הצלחנו להעתיק. נסה שוב.");
     }
+    document.body.removeChild(tempInput);
 }
 
 function showToast(msg) {

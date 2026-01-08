@@ -206,14 +206,30 @@
             justify-content: center;
         }
 
+        /* HEADER BRAND - FIXED FOR MOBILE */
         .question-header-brand {
-            text-align: center;
-            font-size: 1.1rem; /* Increased from 0.85rem */
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.1rem;
             font-weight: 700;
             margin-bottom: 15px;
             opacity: 0.9;
             line-height: 1.4;
+            gap: 5px; /* Spacing between items */
         }
+        
+        .brand-sep { margin: 0 2px; }
+        
+        @media (max-width: 600px) {
+            .question-header-brand {
+                flex-direction: column; /* Stack vertically on mobile */
+                gap: 2px;
+            }
+            .brand-sep { display: none; } /* Hide pipes on mobile */
+        }
+
         .blue-text { color: var(--kinneret-blue); }
         .red-text { color: var(--kinneret-red); }
 
@@ -781,7 +797,14 @@ function renderQ() {
     // Add Header
     const brandDiv = document.createElement('div');
     brandDiv.className = 'question-header-brand';
-    brandDiv.innerHTML = `<span class="blue-text">האקדמית כנרת</span> | <span class="red-text">עושים. חיים!</span> | <span class="blue-text">המחלקה לפסיכולוגיה</span>`;
+    // Updated structure for responsive breaking
+    brandDiv.innerHTML = `
+        <span class="blue-text">האקדמית כנרת</span>
+        <span class="brand-sep">|</span>
+        <span class="red-text">עושים. חיים!</span>
+        <span class="brand-sep desktop-only">|</span>
+        <span class="blue-text brand-dept">המחלקה לפסיכולוגיה</span>
+    `;
     container.appendChild(brandDiv);
 
     const totalQ = state.queue.length; 
@@ -976,12 +999,22 @@ async function shareResult() {
     // Calculate top results
     const sortedTracks = Object.entries(state.scores.tracks).sort((a,b)=>b[1]-a[1]);
     const topTrack = sortedTracks[0][0];
+    // Create compact params: t1=ID,v1=Score,t2=ID,v2=Score...
+    let params = [];
+    sortedTracks.slice(0,3).forEach((t, i) => {
+        params.push(`t${i+1}=${t[0]}`);
+        params.push(`v${i+1}=${t[1]}`);
+    });
+    
+    // Add top training
     const sortedTrain = Object.entries(state.scores.train).sort((a,b)=>b[1]-a[1]);
-    const topTrain = sortedTrain[0][0];
+    params.push(`tr=${sortedTrain[0][0]}`);
+    
+    const queryString = params.join('&');
     
     // Clean URL and add HASH (more robust than query params)
     const baseUrl = window.location.href.split('#')[0].split('?')[0];
-    const shareUrl = `${baseUrl}#track=${topTrack}&train=${topTrain}`;
+    const shareUrl = `${baseUrl}#${queryString}`;
     
     // Share Data
     const shareData = {
@@ -1055,33 +1088,57 @@ function showToast(msg) {
 
 function checkHashParams() {
     // Look for hash params first (new robust way), then fallback to query params (old way)
-    let track, train;
+    let hashString = "";
     
     // 1. Check Hash (#track=...)
     if (window.location.hash) {
-        const hash = window.location.hash.substring(1); // remove #
-        const params = new URLSearchParams(hash);
-        track = params.get('track');
-        train = params.get('train');
+        hashString = window.location.hash.substring(1); // remove #
     } 
     // 2. Fallback to Search (?track=...)
     else if (window.location.search) {
-        const params = new URLSearchParams(window.location.search);
-        track = params.get('track');
-        train = params.get('train');
+        hashString = window.location.search.substring(1);
     }
 
-    if (track && train && trackLabels[track] && trainLabels[train]) {
-        // Ensure state is initialized so graph renders correctly
-        initScores();
+    if (hashString) {
+        const params = new URLSearchParams(hashString);
         
-        // Valid shared link detected
-        document.getElementById('screenIntro').classList.remove('active');
-        state.scores.tracks[track] = 100; // Force high score for winner
-        state.scores.train[train] = 100;
-        document.getElementById('screenResults').classList.add('active');
-        showRes();
-        document.querySelector('.result-title').innerText = "תוצאה ששותפה איתך";
+        // Try new format first (t1, v1, etc.)
+        const t1 = params.get('t1');
+        const v1 = parseInt(params.get('v1'));
+        const tr = params.get('tr');
+
+        if (t1 && !isNaN(v1) && tr) {
+            // Ensure state is initialized so graph renders correctly
+            initScores();
+            
+            // Valid shared link detected with full scores
+            document.getElementById('screenIntro').classList.remove('active');
+            
+            // Restore scores
+            state.scores.tracks[t1] = v1;
+            if (params.get('t2')) state.scores.tracks[params.get('t2')] = parseInt(params.get('v2')) || 0;
+            if (params.get('t3')) state.scores.tracks[params.get('t3')] = parseInt(params.get('v3')) || 0;
+            
+            state.scores.train[tr] = 10; // Ensure training wins
+            
+            document.getElementById('screenResults').classList.add('active');
+            showRes();
+            document.querySelector('.result-title').innerText = "תוצאה ששותפה איתך";
+            return;
+        }
+
+        // Fallback for legacy links (track=XYZ&train=ABC)
+        const track = params.get('track');
+        const train = params.get('train');
+        if (track && train && trackLabels[track] && trainLabels[train]) {
+            initScores();
+            document.getElementById('screenIntro').classList.remove('active');
+            state.scores.tracks[track] = 100; // Force high score for winner
+            state.scores.train[train] = 100;
+            document.getElementById('screenResults').classList.add('active');
+            showRes();
+            document.querySelector('.result-title').innerText = "תוצאה ששותפה איתך";
+        }
     }
 }
 

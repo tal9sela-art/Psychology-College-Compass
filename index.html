@@ -326,14 +326,19 @@
         #manualCopyModal .modal {
             text-align: right;
         }
+        /* Changed from input to textarea for multiline support */
         #manualCopyInput {
             width: 100%;
-            padding: 10px;
+            padding: 15px;
             border: 1px solid #ccc;
-            border-radius: 5px;
+            border-radius: 8px;
             margin: 15px 0;
-            font-size: 0.9rem;
-            direction: ltr;
+            font-size: 0.95rem;
+            direction: ltr; /* Keeps URL LTR */
+            height: 150px;
+            resize: none;
+            font-family: 'Heebo', sans-serif;
+            background: #f9f9f9;
         }
         
         /* Warning for blob/preview environment */
@@ -498,7 +503,8 @@
     <div class="modal">
         <h3 style="color: var(--kinneret-blue); margin-bottom: 10px;">העתקת קישור</h3>
         <p style="margin-bottom: 15px;">הקישור לתוצאה שלך מוכן.<br>אנא העתיקו אותו ושלחו:</p>
-        <input type="text" id="manualCopyInput" readonly>
+        <!-- CHANGED INPUT TO TEXTAREA -->
+        <textarea id="manualCopyInput" readonly></textarea>
         
         <!-- Preview Warning Message -->
         <div id="blobWarning" class="preview-warning">
@@ -955,9 +961,9 @@ function backToResults() {
 }
 
 // === ROBUST SHARING MECHANISM V5 ===
-function shareResult() {
+async function shareResult() {
     const txt = "גיליתי את המסלול שלי בפסיכולוגיה במכללת כנרת! בואו לבדוק גם:";
-    const disclaimer = "* השאלון נועד להכוונה ראשונית ולהמחשת אפשרויות בלבד.";
+    const disclaimer = "* השאלון נועד להכוונה ראשונית.";
     
     // Calculate top results
     const sortedTracks = Object.entries(state.scores.tracks).sort((a,b)=>b[1]-a[1]);
@@ -968,9 +974,28 @@ function shareResult() {
     // Clean URL and add HASH (more robust than query params)
     const baseUrl = window.location.href.split('#')[0].split('?')[0];
     const shareUrl = `${baseUrl}#track=${topTrack}&train=${topTrain}`;
-    const fullText = `${txt}\n${shareUrl}\n\n${disclaimer}`;
+    
+    // Share Data
+    const shareData = {
+        title: 'מצפן הפסיכולוגיה - המכללה האקדמית כנרת',
+        text: `${txt}\n${disclaimer}`,
+        url: shareUrl
+    };
 
-    // Prefer Manual Modal to ensure success on all devices/browsers
+    // Try Native Share First (Web Share API)
+    if (navigator.share) {
+        try {
+            await navigator.share(shareData);
+            return; // Success, exit function
+        } catch (err) {
+            console.log('Share canceled or failed, falling back to modal', err);
+            // Continue to fallback below
+        }
+    }
+
+    // Fallback: Manual Copy Modal
+    // Add extra spaces around URL to prevent stickiness
+    const fullText = `${txt}\n\n${shareUrl}\n\n${disclaimer}`;
     document.getElementById('manualCopyInput').value = fullText;
     
     // Check if we are in blob environment and warn user

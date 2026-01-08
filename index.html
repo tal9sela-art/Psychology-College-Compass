@@ -473,12 +473,8 @@
                 מדהים - מצאת כיוון נהדר להתפתחות אישית ומקצועית!
             </h3>
             
-            <p id="finalText" style="line-height: 1.6; margin-bottom: 30px; font-size: 1.1rem; color: #444;">
-                אצלנו בכנרת, אנחנו רואים אותך.<br>
-                עכשיו כששרטטנו יחד את המטרה, תן לנו ללוות אותך במסע אל עבר המטרה שלך.<br>
-                מזמינים אותך לעשות את הצעד הראשון אצלנו, איתנו!<br>
-                אם חשבנו על רעיון כל כך מדליק, תאמין לנו ובנו שנעשה הכול, אבל הכול כדי לסייע לך להתקדם ולצמוח.
-            </p>
+            <!-- Text container is empty, filled by JS to handle gender dynamically -->
+            <p id="finalText" style="line-height: 1.6; margin-bottom: 30px; font-size: 1.1rem; color: #444;"></p>
             
             <div style="color: var(--kinneret-blue); font-weight: 900; margin-bottom: 30px; font-size: 1.1rem;">
                 שלך,<br>סגל המחלקה לפסיכולוגיה 💙
@@ -540,6 +536,15 @@ const say = {
   male: { you: "אתה", choose: "בחר", start: "לחץ כאן להתחלה", continue: "המשך", next: "המשך" }
 };
 
+/* --- CONTENT TEMPLATES --- */
+// Added Insight Template to ensure correct gender reset every time
+const insightTemplate = `
+    אצלנו בכנרת, אנחנו רואים אותך.<br>
+    עכשיו כששרטטנו יחד את המטרה, תתן לנו ללוות אותך במסע אל עבר המטרה שלך.<br>
+    מזמינים אותך לעשות את הצעד הראשון אצלנו, איתנו!<br>
+    אם חשבנו על רעיון כל כך מדליק, תאמין לנו ובנו שנעשה הכול, אבל הכול כדי לסייע לך להתקדם ולצמוח.
+`;
+
 /* --- GENDER REPLACEMENT DICTIONARY --- */
 const genderMap = {
     male: [
@@ -554,7 +559,7 @@ const genderMap = {
         ["מדמיינ/ת", "מדמיינת"], ["מתחברת/ת", "מתחברת"], ["נותן/ת", "נותנת"],
         ["חושב/ת", "חושבת"], ["פועל/ת", "פועלת"], ["מצוין/ת", "מצוינת"],
         ["אפקטיבי/ת", "אפקטיבית"], ["מטופל/ת", "מטופלת"], ["המדריך/ה", "המדריכה"],
-        ["מדריך/ה", "מדריכה"], ["תאמין לנו", "תאמיני לנו"], ["תן לנו", "תני לנו"]
+        ["מדריך/ה", "מדריכה"], ["תאמין לנו", "תאמיני לנו"], ["תתן לנו", "תני לנו"]
     ]
 };
 
@@ -930,12 +935,10 @@ function generateBridge(track, train) {
 
 // Updated showInsight to navigate to a new screen instead of opening a modal
 function showInsight() { 
-    // Prepare gendered text for the final screen content
+    // Always load from template to ensure correct gender application on restart
     const finalText = document.getElementById('finalText');
     if(finalText) {
-        let txt = finalText.innerHTML;
-        // Apply gender replacements using the helper function
-        finalText.innerHTML = applyGender(txt);
+        finalText.innerHTML = applyGender(insightTemplate);
     }
 
     // Switch Screens

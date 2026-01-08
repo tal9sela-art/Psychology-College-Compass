@@ -427,13 +427,11 @@
                 <div class="btn-card" onclick="setPath('long')">
                     <i class="fa-solid fa-route"></i>
                     <h3>מסלול מלא</h3>
-                    <p>כ-5-7 דקות</p>
                 </div>
                 
                 <div class="btn-card" onclick="setPath('short')">
                     <i class="fa-solid fa-bolt"></i>
                     <h3>מסלול ממוקד</h3>
-                    <p>כ-2 דקות</p>
                 </div>
             </div>
             
@@ -510,28 +508,31 @@
 
     <!-- 4. Insight Screen (Replaces Popup) -->
     <div class="screen" id="screenInsight">
-        <div style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; max-width: 600px; margin: 0 auto;">
-            <i class="fa-solid fa-star" style="font-size: 4rem; color: var(--kinneret-yellow); margin-bottom: 25px;"></i>
-            
-            <h3 style="color: var(--kinneret-blue); font-weight: 900; font-size: 1.8rem; margin-bottom: 20px; line-height: 1.2;">
-                מדהים - מצאת כיוון נהדר להתפתחות אישית ומקצועית!
-            </h3>
-            
-            <!-- Text container is empty, filled by JS to handle gender dynamically -->
-            <p id="finalText" style="line-height: 1.6; margin-bottom: 30px; font-size: 1.1rem; color: #444;"></p>
-            
-            <div style="color: var(--kinneret-blue); font-weight: 900; margin-bottom: 30px; font-size: 1.1rem;">
-                שלך,<br>סגל המחלקה לפסיכולוגיה 💙
-            </div>
-            
-            <a href="https://www.kinneret.ac.il/program/%D7%AA%D7%97%D7%95%D7%9E%D7%99-%D7%9C%D7%99%D7%9E%D7%95%D7%93/%D7%91%D7%99%D7%AA-%D7%94%D7%A1%D7%A4%D7%A8-%D7%9C%D7%9E%D7%93%D7%A2%D7%99-%D7%94%D7%97%D7%91%D7%A8%D7%94-%D7%95%D7%94%D7%A8%D7%95%D7%97/b-a-%D7%91%D7%A4%D7%A1%D7%99%D7%9B%D7%95%D7%9C%D7%95%D7%92%D7%99%D7%94/" target="_blank" class="btn btn-primary" style="padding: 14px 30px; text-decoration: none; border-radius: 50px;">
-                ליצירת קשר והרשמה
-            </a>
-            
-            <div style="margin-top: 40px;">
-                <button onclick="backToResults()" style="background:none; border:none; color:#999; font-size: 0.9rem; text-decoration: underline; cursor: pointer;">
-                    חזרה לתוצאות
-                </button>
+        <!-- Added wrapper with scroll handling -->
+        <div style="width:100%; height:100%; overflow-y:auto;">
+            <div style="min-height: 100%; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; max-width: 600px; margin: 0 auto; padding-bottom: 40px;">
+                <i class="fa-solid fa-star" style="font-size: 4rem; color: var(--kinneret-yellow); margin-bottom: 25px;"></i>
+                
+                <h3 style="color: var(--kinneret-blue); font-weight: 900; font-size: 1.8rem; margin-bottom: 20px; line-height: 1.2;">
+                    מדהים - מצאת כיוון נהדר להתפתחות אישית ומקצועית!
+                </h3>
+                
+                <!-- Text container is empty, filled by JS to handle gender dynamically -->
+                <p id="finalText" style="line-height: 1.6; margin-bottom: 30px; font-size: 1.1rem; color: #444;"></p>
+                
+                <div style="color: var(--kinneret-blue); font-weight: 900; margin-bottom: 30px; font-size: 1.1rem;">
+                    שלך,<br>סגל המחלקה לפסיכולוגיה 💙
+                </div>
+                
+                <a href="https://www.kinneret.ac.il/program/%D7%AA%D7%97%D7%95%D7%9E%D7%99-%D7%9C%D7%99%D7%9E%D7%95%D7%93/%D7%91%D7%99%D7%AA-%D7%94%D7%A1%D7%A4%D7%A8-%D7%9C%D7%9E%D7%93%D7%A2%D7%99-%D7%94%D7%97%D7%91%D7%A8%D7%94-%D7%95%D7%94%D7%A8%D7%95%D7%97/b-a-%D7%91%D7%A4%D7%A1%D7%99%D7%9B%D7%95%D7%9C%D7%95%D7%92%D7%99%D7%94/" target="_blank" class="btn btn-primary" style="padding: 14px 30px; text-decoration: none; border-radius: 50px;">
+                    ליצירת קשר והרשמה
+                </a>
+                
+                <div style="margin-top: 40px;">
+                    <button onclick="backToResults()" style="background:none; border:none; color:#999; font-size: 0.9rem; text-decoration: underline; cursor: pointer;">
+                        חזרה לתוצאות
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -604,14 +605,24 @@ const genderMap = {
         ["מדמיינ/ת", "מדמיין"], ["מתחברת/ת", "מתחבר"], ["נותן/ת", "נותן"], 
         ["חושב/ת", "חושב"], ["פועל/ת", "פועל"], ["מצוין/ת", "מצוין"],
         ["אפקטיבי/ת", "אפקטיבי"], ["מטופל/ת", "מטופל"], ["המדריך/ה", "המדריך"],
-        ["מדריך/ה", "מדריך"], ["תאמין לנו", "תאמין לנו"], ["תתן לנו", "תן לנו"]
+        ["מדריך/ה", "מדריך"], ["תאמין לנו", "תאמין לנו"], ["תתן לנו", "תן לנו"],
+        ["שואפ/ת", "שואף"], ["משפיע/ה", "משפיע"], ["מעצב/ת", "מעצב"],
+        ["נמשך/ת", "נמשך"], ["מתעניין/ת", "מתעניין"], ["פורח/ת", "פורח"],
+        ["מאמין/ה", "מאמין"], ["עובד/ת", "עובד"], ["יודע/ת", "יודע"],
+        ["מבין/ה", "מבין"], ["מכוון/ת", "מכוון"], ["מעדיף/ה", "מעדיף"],
+        ["אוהב/ת", "אוהב"], ["מפגין/ה", "מפגין"]
     ],
     female: [
         ["את/ה", "את"], ["מעדיפ/ה", "מעדיפה"], ["מרגיש/ה", "מרגישה"], 
         ["מדמיינ/ת", "מדמיינת"], ["מתחברת/ת", "מתחברת"], ["נותן/ת", "נותנת"], 
         ["חושב/ת", "חושבת"], ["פועל/ת", "פועלת"], ["מצוין/ת", "מצוינת"],
         ["אפקטיבי/ת", "אפקטיבית"], ["מטופל/ת", "מטופלת"], ["המדריך/ה", "המדריכה"],
-        ["מדריך/ה", "מדריכה"], ["תאמין לנו", "תאמיני לנו"], ["תתן לנו", "תני לנו"]
+        ["מדריך/ה", "מדריכה"], ["תאמין לנו", "תאמיני לנו"], ["תתן לנו", "תני לנו"],
+        ["שואפ/ת", "שואפת"], ["משפיע/ה", "משפיעה"], ["מעצב/ת", "מעצבת"],
+        ["נמשך/ת", "נמשכת"], ["מתעניין/ת", "מתעניינת"], ["פורח/ת", "פורחת"],
+        ["מאמין/ה", "מאמינה"], ["עובד/ת", "עובדת"], ["יודע/ת", "יודעת"],
+        ["מבין/ה", "מבינה"], ["מכוון/ת", "מכוונת"], ["מעדיף/ה", "מעדיפה"],
+        ["אוהב/ת", "אוהבת"], ["מפגין/ה", "מפגינה"]
     ]
 };
 
@@ -820,20 +831,20 @@ function start() {
     let flow = [];
     
     if (state.length === 'short') {
-        // Short: 20 Questions (8 Base + 8 Mod + 4 Train)
-        seededShuffle(qBase).slice(0,8).forEach(q => flow.push({...q, type:'base'}));
+        // Short: 14 Questions (6 Base + 5 Mod + 3 Train) - Reduced from 20
+        seededShuffle(qBase).slice(0,6).forEach(q => flow.push({...q, type:'base'}));
         
         let allModQs = [];
         Object.values(modules).forEach(m => allModQs.push(...m));
-        seededShuffle(allModQs).slice(0,8).forEach(q => flow.push({...q, type:'module_flat'}));
+        seededShuffle(allModQs).slice(0,5).forEach(q => flow.push({...q, type:'module_flat'}));
         
-        seededShuffle(qTrain).slice(0,4).forEach(q => flow.push({...q, type:'train'}));
+        seededShuffle(qTrain).slice(0,3).forEach(q => flow.push({...q, type:'train'}));
     } else {
-        // Full Path
-        seededShuffle(qBase).forEach(q => flow.push({...q, type:'base'}));
-        flow.push({type:'module_select'}); 
-        seededShuffle(qTrain).forEach(q => flow.push({...q, type:'train'}));
-        seededShuffle(qTie).forEach(q => flow.push({...q, type:'tie'}));
+        // Full Path: ~33 Questions (14 Base + 8 Module + 8 Train + 3 Tie) - Reduced from ~48
+        seededShuffle(qBase).slice(0, 14).forEach(q => flow.push({...q, type:'base'}));
+        flow.push({type:'module_select'}); // Adds 8 specific module questions later
+        seededShuffle(qTrain).slice(0, 8).forEach(q => flow.push({...q, type:'train'}));
+        seededShuffle(qTie).slice(0,3).forEach(q => flow.push({...q, type:'tie'}));
     }
     
     state.queue = flow;
@@ -1023,7 +1034,7 @@ function showRes() {
     
     const leadTrack = top3[0][0];
     let nextStep = "לבחור קורסי ליבה ולשלב התנסות בשטח.";
-    if(leadTrack==='CLI_A') nextStep = "לבחור קורסי יסוד בפסיכותרפיה ולהתקרב לסטינג קליני.";
+    if(leadTrack==='CLI_A') nextStep = "לבחור קורסי יסוד בפסיכותרפיה ולהתנסות בשדה עם אוכלוסיות מגוונות.";
     if(leadTrack==='EDU') nextStep = "לחפש התנסות במסגרת חינוכית ולהתמקד בהתפתחות.";
     if(leadTrack==='OCC') nextStep = "לשלב קורסים ארגוניים ולחפש פרויקט בארגון.";
     document.getElementById('nextStepText').innerText = nextStep;

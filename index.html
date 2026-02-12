@@ -226,7 +226,7 @@
             flex-wrap: wrap;
             justify-content: center;
             align-items: center;
-            font-size: 1.1rem;
+            font-size: 1.3rem; /* Increased from 1.1rem */
             font-weight: 700;
             margin-bottom: 15px;
             opacity: 0.9;
@@ -368,6 +368,28 @@
             display: flex; align-items: center; justify-content: center; gap: 10px;
         }
         .btn-whatsapp:hover { background: #128C7E; }
+
+        .btn-facebook {
+            background: #3b5998; color: white; border: none;
+            padding: 12px 20px; border-radius: 50px; font-size: 1rem; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .btn-facebook:hover { background: #2d4373; }
+
+        .btn-twitter {
+            background: #000000; color: white; border: none; /* X is black */
+            padding: 12px 20px; border-radius: 50px; font-size: 1rem; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .btn-twitter:hover { background: #333; }
+
+        .btn-instagram {
+             background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+             color: white; border: none;
+             padding: 12px 20px; border-radius: 50px; font-size: 1rem; cursor: pointer;
+             display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .btn-instagram:hover { opacity: 0.9; }
         
         .btn-copy-link {
             background: #eee; color: #333; border: none;
@@ -413,7 +435,7 @@
                 נצא יחד למסע חוויתי קצר שיעזור לך להבין מה מסקרן אותך באמת בעולם הפסיכולוגיה, אילו כיווני התפתחות יכולים להתאים לך כבר עכשיו, ובהמשך&nbsp;הדרך.<br>
                 ננסה להבין יחד איזה הכשרות אפשריות יוכלו&nbsp;להתאים&nbsp;לך.<br><br>
                 <strong>מבטיחים שיהיה&nbsp;מעניין!</strong>
-                <span style="font-size: 0.9rem; font-weight: 700; margin-top: 15px; display:block; color: var(--kinneret-blue);">שלך, סגל המחלקה&nbsp;לפסיכולוגיה</span>
+                <span style="font-size: 1.3rem; font-weight: 700; margin-top: 15px; display:block; color: var(--kinneret-blue);">שלך, סגל המחלקה&nbsp;לפסיכולוגיה</span>
             </p>
 
             <div style="width: 100%; max-width: 400px; text-align: center;">
@@ -430,7 +452,7 @@
     <!-- 1.5. Path Selection -->
     <div class="screen" id="screenPath">
         <div style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;">
-            <h2 style="color:var(--kinneret-blue); margin-bottom: 30px; font-weight: 900; font-size: 2rem;">בחר/י את אופי המסע שלך</h2>
+            <h2 id="pathTitle" style="color:var(--kinneret-blue); margin-bottom: 30px; font-weight: 900; font-size: 2rem;">בחר/י את אופי המסע שלך</h2>
             
             <div style="display:flex; flex-direction:column; gap:20px; width:100%; max-width:320px;">
                 <div class="btn-card" onclick="setPath('long')">
@@ -467,6 +489,14 @@
     <!-- 3. Results Screen -->
     <div class="screen" id="screenResults">
         <div class="result-scroll">
+            
+            <!-- Insight Button Moved Here (Top) -->
+            <div style="text-align: center; margin-bottom: 30px; margin-top: 10px;">
+                <button class="btn btn-insight" id="btnInsight" onclick="showInsight()">
+                    <i class="fa-regular fa-lightbulb"></i> קבל/י תובנה
+                </button>
+            </div>
+
             <h2 class="result-title" style="color: var(--kinneret-blue); font-weight: 900; text-align: center; font-size: 2rem;">הכיוון שלך</h2>
             <p style="text-align: center; color: var(--text-gray); margin-bottom: 25px;">על סמך התשובות שלך — אלה המסלולים והכלים שכדאי לך לבדוק 👇</p>
 
@@ -500,14 +530,9 @@
             </div>
 
             <div class="btn-group-center">
-                <!-- Share button first as requested -->
+                <!-- Share button enlarged and kept at bottom -->
                 <button class="btn btn-share" onclick="shareResult()">
                     <i class="fa-solid fa-share-nodes"></i> שתף תוצאה
-                </button>
-
-                <!-- Insight button second, genderized dynamically -->
-                <button class="btn btn-insight" id="btnInsight" onclick="showInsight()">
-                    <i class="fa-regular fa-lightbulb"></i> קבל/י תובנה
                 </button>
             </div>
             
@@ -532,11 +557,11 @@
                 <!-- Text container is empty, filled by JS to handle gender dynamically -->
                 <p id="finalText" style="line-height: 1.6; margin-bottom: 30px; font-size: 1.1rem; color: #444;"></p>
                 
-                <div style="color: var(--kinneret-blue); font-weight: 900; margin-bottom: 30px; font-size: 1.1rem;">
+                <div style="color: var(--kinneret-blue); font-weight: 900; margin-bottom: 30px; font-size: 1.3rem;">
                     שלך,<br>סגל המחלקה לפסיכולוגיה 💙
                 </div>
                 
-                <a href="https://www.kinneret.ac.il/program/%D7%AA%D7%97%D7%95%D7%9E%D7%99-%D7%9C%D7%99%D7%9E%D7%95%D7%93/%D7%91%D7%99%D7%AA-%D7%94%D7%A1%D7%A4%D7%A8-%D7%9C%D7%9E%D7%93%D7%A2%D7%99-%D7%94%D7%97%D7%91%D7%A8%D7%94-%D7%95%D7%94%D7%A8%D7%95%D7%97/b-a-%D7%91%D7%A4%D7%A1%D7%99%D7%9B%D7%95%D7%9C%D7%95%D7%92%D7%99%D7%94/" target="_blank" class="btn btn-primary" style="padding: 14px 30px; text-decoration: none; border-radius: 50px;">
+                <a href="https://do.kinneret.ac.il/studies/ba-psychology/" target="_blank" class="btn btn-primary" style="padding: 14px 30px; text-decoration: none; border-radius: 50px;">
                     ליצירת קשר והרשמה
                 </a>
                 
@@ -559,6 +584,18 @@
         <div class="share-grid">
             <button class="btn btn-whatsapp" onclick="shareToWhatsapp()">
                 <i class="fa-brands fa-whatsapp"></i> שיתוף בוואטסאפ
+            </button>
+            
+            <button class="btn btn-facebook" onclick="shareToFacebook()">
+                <i class="fa-brands fa-facebook"></i> שיתוף בפייסבוק
+            </button>
+
+            <button class="btn btn-twitter" onclick="shareToTwitter()">
+                <i class="fa-brands fa-x-twitter"></i> שיתוף בטוויטר (X)
+            </button>
+
+            <button class="btn btn-instagram" onclick="shareToInstagram()">
+                <i class="fa-brands fa-instagram"></i> שיתוף באינסטגרם
             </button>
             
             <button class="btn btn-copy-link" onclick="copyLink()">
@@ -809,6 +846,11 @@ function selectGender(gender) {
     if (isNavigating) return;
     isNavigating = true;
     state.gender = gender;
+    
+    // Update Path Selection Title based on gender
+    const titleText = gender === 'female' ? "בחרי את אופי המסע שלך" : "בחר את אופי המסע שלך";
+    document.getElementById('pathTitle').innerText = titleText;
+
     document.getElementById('screenIntro').classList.remove('active');
     document.getElementById('screenPath').classList.add('active');
     setTimeout(() => isNavigating = false, 500);
@@ -1156,6 +1198,28 @@ function shareToWhatsapp() {
     const fullMsg = `${text}\n${url}\n\n${disclaimer}`;
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(fullMsg)}`;
     window.open(whatsappUrl, '_blank');
+}
+
+function shareToFacebook() {
+    if (!window.shareContext) return;
+    const { url } = window.shareContext;
+    const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+    window.open(fbUrl, '_blank');
+}
+
+function shareToTwitter() {
+    if (!window.shareContext) return;
+    const { text, url } = window.shareContext; 
+    const fullText = text; 
+    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(fullText)}&url=${encodeURIComponent(url)}`;
+    window.open(twitterUrl, '_blank');
+}
+
+function shareToInstagram() {
+    copyLink(); 
+    setTimeout(() => {
+         window.open('https://www.instagram.com/', '_blank');
+    }, 1000);
 }
 
 function copyLink() {

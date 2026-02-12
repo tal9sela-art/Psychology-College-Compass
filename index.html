@@ -1167,17 +1167,8 @@ async function shareResult() {
         url: shareUrl
     };
 
-    // Try Native Share First (Web Share API)
-    if (navigator.share) {
-        try {
-            await navigator.share(shareData);
-            return; // Success, exit function
-        } catch (err) {
-            console.log('Share canceled or failed, falling back to modal', err);
-            // Continue to fallback below
-        }
-    }
-
+    // Removed the automatic navigator.share to prioritize the custom modal
+    
     // Fallback: Share Options Modal
     // Store variables globally for buttons to use
     window.shareContext = { text: txt, url: shareUrl, disclaimer: disclaimer };
